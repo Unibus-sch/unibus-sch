@@ -78,6 +78,25 @@ docker compose up --build
 
 Production credentials must be supplied as runtime environment variables. Do not bake them into the image or commit an `.env` file.
 
+## Prepare a staging deployment
+
+The staging profile and hardened Compose definition are intentionally separate from the local
+development Compose file:
+
+```bash
+cp .env.staging.example .env.staging
+docker compose --env-file .env.staging -f compose.staging.yaml config --quiet
+```
+
+Do not start it until every placeholder points to an isolated staging resource. Image publishing,
+health checks, logging, deployment, and rollback are documented in
+[`docs/staging-deployment.md`](docs/staging-deployment.md). This configuration does not switch any
+production frontend or DNS traffic.
+
+For the teammate provisioning AWS, use [`docs/aws-handoff.md`](docs/aws-handoff.md). It contains
+the runtime contract, secret-name mapping, Supabase migration checks, image digest handoff, and
+post-deploy acceptance checklist without any real account IDs, ARNs, endpoints, or credentials.
+
 ## Migration safety boundaries
 
 - Only health and the documented public GET endpoints are public.

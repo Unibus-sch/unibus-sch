@@ -16,6 +16,8 @@ repositories {
     mavenCentral()
 }
 
+val tomcatVersion = "11.0.26"
+
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:4.1.1"))
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -23,6 +25,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    // Spring Boot 4.1.1 manages Tomcat 11.0.24. Keep all embedded modules aligned on a
+    // release containing the August 2026 security fixes until the Boot BOM catches up.
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatVersion")
+    implementation("org.apache.tomcat.embed:tomcat-embed-el:$tomcatVersion")
+    implementation("org.apache.tomcat.embed:tomcat-embed-websocket:$tomcatVersion")
     implementation("nl.martijndwars:web-push:5.1.2")
     implementation("org.bouncycastle:bcprov-jdk18on:1.86")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")

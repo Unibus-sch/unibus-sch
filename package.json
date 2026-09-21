@@ -10,8 +10,10 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:env": "node --test scripts/validate-env.test.mjs",
+    "test:staging-smoke": "node --test scripts/staging-smoke.test.mjs",
     "verify:env": "node scripts/validate-env.mjs",
     "verify:parity": "node scripts/verify-edge-spring-parity.mjs",
+    "verify:staging": "node scripts/verify-staging-smoke.mjs",
     "verify:integrations": "node scripts/verify-supabase-integrations.mjs",
     "preview": "vite preview"
   },

@@ -1,0 +1,61 @@
+spring:
+  jpa:
+    show-sql: false
+  output:
+    ansi:
+      enabled: never
+
+server:
+  error:
+    include-binding-errors: never
+    include-exception: false
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-components: never
+      show-details: never
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db
+
+logging:
+  structured:
+    format:
+      console: ${UNIBUS_LOG_FORMAT:logstash}
+  level:
+    root: ${UNIBUS_LOG_LEVEL_ROOT:INFO}
+    com.unibus.backend: ${UNIBUS_LOG_LEVEL_APP:INFO}
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+
+app:
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS}
+    allowed-origin-patterns: ${APP_CORS_ALLOWED_ORIGIN_PATTERNS:}
+  schema:
+    validation:
+      enabled: true
+  naver:
+    client-id: ${NAVER_CLIENT_ID}
+    secret-key: ${NAVER_SECRET_KEY}
+  kakao:
+    user-info-url: ${KAKAO_USER_INFO_URL:https://kapi.kakao.com/v2/user/me}
+  supabase:
+    api-url: ${SUPABASE_API_URL}
+    service-role-key: ${SUPABASE_SERVICE_ROLE_KEY}
+  push:
+    vapid-public-key: ${VAPID_PUBLIC_KEY}
+    vapid-private-key: ${VAPID_PRIVATE_KEY}
+    vapid-subject: ${VAPID_SUBJECT}
+    allowed-hosts: ${PUSH_ALLOWED_HOSTS}

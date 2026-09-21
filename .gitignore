@@ -39,6 +39,7 @@ supabase/functions/.env.local
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env.staging
 
 # Vite / Build outputs
 dist/

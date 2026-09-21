@@ -1,0 +1,60 @@
+name: unibus-spring-staging
+
+services:
+  api:
+    image: "${UNIBUS_BACKEND_IMAGE:?UNIBUS_BACKEND_IMAGE must be an immutable staging image reference}"
+    init: true
+    ports:
+      - "${UNIBUS_STAGING_BIND_ADDRESS:-127.0.0.1}:${UNIBUS_STAGING_PORT:-18080}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: staging
+      PORT: "8080"
+      SUPABASE_DB_URL: "${SUPABASE_DB_URL:?SUPABASE_DB_URL is required}"
+      SUPABASE_DB_USERNAME: "${SUPABASE_DB_USERNAME:?SUPABASE_DB_USERNAME is required}"
+      SUPABASE_DB_PASSWORD: "${SUPABASE_DB_PASSWORD:?SUPABASE_DB_PASSWORD is required}"
+      SUPABASE_API_URL: "${SUPABASE_API_URL:?SUPABASE_API_URL is required}"
+      SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY:?SUPABASE_SERVICE_ROLE_KEY is required}"
+      APP_CORS_ALLOWED_ORIGINS: "${APP_CORS_ALLOWED_ORIGINS:?APP_CORS_ALLOWED_ORIGINS is required}"
+      APP_CORS_ALLOWED_ORIGIN_PATTERNS: "${APP_CORS_ALLOWED_ORIGIN_PATTERNS:-}"
+      NAVER_CLIENT_ID: "${NAVER_CLIENT_ID:?NAVER_CLIENT_ID is required}"
+      NAVER_SECRET_KEY: "${NAVER_SECRET_KEY:?NAVER_SECRET_KEY is required}"
+      KAKAO_USER_INFO_URL: "${KAKAO_USER_INFO_URL:-https://kapi.kakao.com/v2/user/me}"
+      VAPID_PUBLIC_KEY: "${VAPID_PUBLIC_KEY:?VAPID_PUBLIC_KEY is required}"
+      VAPID_PRIVATE_KEY: "${VAPID_PRIVATE_KEY:?VAPID_PRIVATE_KEY is required}"
+      VAPID_SUBJECT: "${VAPID_SUBJECT:?VAPID_SUBJECT is required}"
+      PUSH_ALLOWED_HOSTS: "${PUSH_ALLOWED_HOSTS:?PUSH_ALLOWED_HOSTS is required}"
+      DB_POOL_MAX_SIZE: "${DB_POOL_MAX_SIZE:-10}"
+      DB_POOL_MIN_IDLE: "${DB_POOL_MIN_IDLE:-2}"
+      DB_CONNECTION_TIMEOUT_MS: "${DB_CONNECTION_TIMEOUT_MS:-10000}"
+      DB_VALIDATION_TIMEOUT_MS: "${DB_VALIDATION_TIMEOUT_MS:-3000}"
+      UNIBUS_LOG_FORMAT: "${UNIBUS_LOG_FORMAT:-logstash}"
+      UNIBUS_LOG_LEVEL_ROOT: "${UNIBUS_LOG_LEVEL_ROOT:-INFO}"
+      UNIBUS_LOG_LEVEL_APP: "${UNIBUS_LOG_LEVEL_APP:-INFO}"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 30s
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -O /dev/null http://127.0.0.1:8080/actuator/health/readiness || exit 1
+      interval: 15s
+      timeout: 3s
+      start_period: 45s
+      retries: 4
+    logging:
+      driver: json-file
+      options:
+        max-size: "${UNIBUS_DOCKER_LOG_MAX_SIZE:-10m}"
+        max-file: "${UNIBUS_DOCKER_LOG_MAX_FILE:-5}"
+        compress: "true"
+    deploy:
+      resources:
+        limits:
+          cpus: "${UNIBUS_STAGING_CPU_LIMIT:-1.0}"
+          memory: "${UNIBUS_STAGING_MEMORY_LIMIT:-768M}"
