@@ -1,0 +1,160 @@
+name: Deploy Spring Backend to Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Confirm the staging deployment
+        required: true
+        type: choice
+        options:
+          - deploy-staging
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: spring-backend-staging
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: unibus-backend-staging
+  EC2_INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+  SSM_DOCUMENT_NAME: unibus-staging-deploy
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/feature/server-setting' && inputs.confirmation == 'deploy-staging'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: staging
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Java 21
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-provider: basic
+
+      - name: Test Spring backend
+        working-directory: backend
+        run: ./gradlew clean test --no-daemon
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Verify frontend contracts
+        run: |
+          npm ci
+          npm run test:env
+          npm run test:staging-smoke
+          npm run typecheck
+          npm run lint
+
+      - name: Configure AWS credentials with OIDC
+        uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          role-session-name: unibus-staging-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
+
+      - name: Build or reuse immutable ECR image
+        id: image
+        working-directory: backend
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          account_id="$(aws sts get-caller-identity --query Account --output text)"
+          registry="${account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+          image_tag="${registry}/${ECR_REPOSITORY}:${GITHUB_SHA}"
+
+          digest="$(aws ecr describe-images \
+            --repository-name "${ECR_REPOSITORY}" \
+            --image-ids imageTag="${GITHUB_SHA}" \
+            --query 'imageDetails[0].imageDigest' \
+            --output text 2>/dev/null || true)"
+
+          if [[ ! "${digest}" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+            aws ecr get-login-password --region "${AWS_REGION}" \
+              | docker login --username AWS --password-stdin "${registry}"
+
+            docker build \
+              --build-arg APP_VERSION="${GITHUB_SHA}" \
+              --build-arg VCS_REF="${GITHUB_SHA}" \
+              --tag "${image_tag}" \
+              .
+            docker push "${image_tag}"
+
+            digest="$(aws ecr describe-images \
+              --repository-name "${ECR_REPOSITORY}" \
+              --image-ids imageTag="${GITHUB_SHA}" \
+              --query 'imageDetails[0].imageDigest' \
+              --output text)"
+          fi
+
+          if [[ ! "${digest}" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+            echo "ECR did not return a valid image digest" >&2
+            exit 1
+          fi
+
+          image_uri="${registry}/${ECR_REPOSITORY}@${digest}"
+          echo "image_uri=${image_uri}" >> "${GITHUB_OUTPUT}"
+          echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
+          {
+            echo "### Staging image"
+            echo "- Git SHA: \`${GITHUB_SHA}\`"
+            echo "- ECR digest: \`${digest}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Deploy digest through restricted SSM document
+        shell: bash
+        env:
+          IMAGE_URI: ${{ steps.image.outputs.image_uri }}
+        run: |
+          set -euo pipefail
+
+          parameters="$(jq -cn \
+            --arg imageUri "${IMAGE_URI}" \
+            --arg gitSha "${GITHUB_SHA}" \
+            '{ImageUri: [$imageUri], GitSha: [$gitSha]}')"
+
+          command_id="$(aws ssm send-command \
+            --document-name "${SSM_DOCUMENT_NAME}" \
+            --instance-ids "${EC2_INSTANCE_ID}" \
+            --parameters "${parameters}" \
+            --comment "UNIBUS staging ${GITHUB_SHA}" \
+            --query 'Command.CommandId' \
+            --output text)"
+
+          set +e
+          aws ssm wait command-executed \
+            --command-id "${command_id}" \
+            --instance-id "${EC2_INSTANCE_ID}"
+          wait_status=$?
+          set -e
+
+          invocation_status="$(aws ssm get-command-invocation \
+            --command-id "${command_id}" \
+            --instance-id "${EC2_INSTANCE_ID}" \
+            --query 'Status' \
+            --output text)"
+
+          echo "SSM command status: ${invocation_status}"
+          if [[ ${wait_status} -ne 0 || "${invocation_status}" != "Success" ]]; then
+            exit 1
+          fi
