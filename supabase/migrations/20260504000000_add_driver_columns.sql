@@ -17,7 +17,10 @@ ALTER TABLE buses
 CREATE INDEX IF NOT EXISTS idx_buses_running ON buses(is_running);
 
 -- 3. buses_with_routes 뷰에 is_running, current_driver_id 반영
-CREATE OR REPLACE VIEW buses_with_routes AS
+-- 기존 뷰보다 컬럼 수가 줄어드는 변경은 CREATE OR REPLACE VIEW로 적용할 수 없다.
+-- 새 Supabase 환경에서도 전체 마이그레이션을 처음부터 재생할 수 있도록 명시적으로 재생성한다.
+DROP VIEW IF EXISTS buses_with_routes;
+CREATE VIEW buses_with_routes AS
 SELECT
   b.id,
   b.name,

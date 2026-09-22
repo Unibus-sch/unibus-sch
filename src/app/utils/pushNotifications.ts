@@ -1,7 +1,5 @@
 import { api } from "../services/api";
 
-const FALLBACK_VAPID_PUBLIC_KEY = "BLfZ_aHNm22NBBLedLm5NfFb3SR1iIbUL3WrNM-2-BPdHIcP3KCjanwpCrTIQ4JB6WFboaFf889eQ2K2RrNNMbQ";
-
 function base64UrlToUint8Array(base64Url: string) {
   const padding = "=".repeat((4 - (base64Url.length % 4)) % 4);
   const base64 = (base64Url + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -25,12 +23,7 @@ function waitForServiceWorkerReady() {
 }
 
 async function getVapidPublicKey() {
-  try {
-    const key = await api.getVapidPublicKey();
-    return key || FALLBACK_VAPID_PUBLIC_KEY;
-  } catch {
-    return FALLBACK_VAPID_PUBLIC_KEY;
-  }
+  return api.getVapidPublicKey();
 }
 
 export async function ensurePushSubscription() {

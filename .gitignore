@@ -39,10 +39,16 @@ supabase/functions/.env.local
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env.staging
 
 # Vite / Build outputs
 dist/
 build/
+
+# Spring Boot / Gradle
+.gradle/
+backend/build/
+backend/out/
 
 # Temporary files
 *.tmp

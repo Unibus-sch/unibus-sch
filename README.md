@@ -149,10 +149,10 @@ UNIBUS SCH는 세 가지 역할로 운영됩니다.
 |------|------|
 | 프론트엔드 | React 18, Vite, TypeScript, Tailwind CSS, Framer Motion |
 | 지도 | 네이버 지도 API (Directions 5) |
-| 백엔드 | Supabase Edge Functions (Deno + Hono) |
+| 백엔드 | Spring Boot (마이그레이션 API) + Supabase Edge Functions (잔여 API) |
 | 데이터베이스 | Supabase PostgreSQL + Realtime |
 | 인증 | 자체 토큰 인증 + 카카오 소셜 로그인 |
-| 배포 | Vercel (프론트엔드), Supabase (백엔드·DB) |
+| 배포 | Vercel (프론트엔드), Supabase (DB·Realtime·Storage·잔여 Edge API); Spring 운영 배포는 아직 미전환 |
 | PWA | Vite PWA Plugin (오프라인 지원, 앱 설치 가능) |
 
 ---
@@ -171,10 +171,11 @@ UNIBUS SCH는 세 가지 역할로 운영됩니다.
 # 1. Supabase 인프라 시작 (DB, Auth, Realtime)
 supabase start
 
-# 2. Edge Functions 서버 실행
-supabase functions serve make-server --no-verify-jwt
+# 2. Spring API 실행 (backend/.env.example 참고)
+cd backend
+./gradlew bootRun
 
-# 3. 프론트엔드 개발 서버
+# 3. 프론트엔드 개발 서버 (프로젝트 루트)
 npm run dev
 # → http://localhost:5173
 ```
@@ -187,6 +188,10 @@ npm run dev
 VITE_SUPABASE_URL=http://localhost:54321
 VITE_SUPABASE_PROJECT_ID=your_project_id
 VITE_SUPABASE_ANON_KEY=your_anon_key
+VITE_PUBLIC_API_BASE_URL=http://localhost:8080
+VITE_AUTH_API_BASE_URL=http://localhost:8080
+VITE_ADMIN_API_BASE_URL=http://localhost:8080
+VITE_DRIVER_API_BASE_URL=http://localhost:8080
 VITE_NAVER_CLIENT_ID=your_naver_client_id
 VITE_KAKAO_APP_KEY=your_kakao_app_key
 ```
@@ -196,6 +201,11 @@ VITE_KAKAO_APP_KEY=your_kakao_app_key
 ```bash
 supabase db reset   # 마이그레이션 + 시드 데이터 초기화
 ```
+
+Spring은 시작 시 필요한 Supabase 테이블·컬럼·함수를 읽기 전용으로 검사하며 스키마를
+자동 변경하지 않습니다. 프런트 프로덕션 빌드는 `npm run build` 전에 필수 환경변수와
+localhost 오설정을 검사합니다. 상세 전환 조건은 `backend/docs/production-readiness.md`를
+참조하세요.
 
 ---
 

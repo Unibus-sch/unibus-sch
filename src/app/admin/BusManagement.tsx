@@ -46,7 +46,7 @@ export default function BusManagement() {
     setLoading(true);
     setError("");
     try {
-      const [busData, userData, routeData] = await Promise.all([api.getBuses(), api.getUsers(), api.getRoutes()]);
+      const [busData, userData, routeData] = await Promise.all([api.getManagedBuses(), api.getUsers(), api.getRoutes()]);
       setBuses(busData);
       setDrivers(userData.filter((user: any) => user.role === "driver"));
       setRoutes(routeData.filter((route) => route.isActive));
@@ -58,7 +58,7 @@ export default function BusManagement() {
   }, []);
 
   const refreshBuses = useCallback(async () => {
-    try { setBuses(await api.getBuses()); } catch { /* keep the last confirmed state */ }
+    try { setBuses(await api.getManagedBuses()); } catch { /* keep the last confirmed state */ }
   }, []);
 
   useEffect(() => { void loadAll(); }, [loadAll]);

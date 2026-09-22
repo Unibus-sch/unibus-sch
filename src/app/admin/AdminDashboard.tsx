@@ -46,7 +46,7 @@ export default function AdminDashboard() {
   const loadOperations = useCallback(async () => {
     setLoading(true);
     const results = await Promise.allSettled([
-      api.getBuses(), api.getRoutes(), api.getNotices(), api.getReports(), api.getUsers(),
+      api.getManagedBuses(), api.getRoutes(), api.getNotices(), api.getReports(), api.getUsers(),
     ]);
     const labels = ["버스·GPS", "노선", "공지", "문의", "사용자"];
     setHealth(results.map((result, index) => ({ label: labels[index], ok: result.status === "fulfilled" })));

@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: unibus-backend
+  datasource:
+    url: ${SUPABASE_DB_URL}
+    username: ${SUPABASE_DB_USERNAME}
+    password: ${SUPABASE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:5}
+      minimum-idle: ${DB_POOL_MIN_IDLE:1}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT_MS:10000}
+      validation-timeout: ${DB_VALIDATION_TIMEOUT_MS:3000}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  sql:
+    init:
+      mode: never
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+app:
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,https://unibus-sch.vercel.app,https://unibus-sch-two.vercel.app}
+    allowed-origin-patterns: ${APP_CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:*,http://127.0.0.1:*,https://unibus-sch-git-*-ddingddong9s-projects.vercel.app,https://unibus-sch-*-ddingddong9s-projects.vercel.app,https://unibus-*-ddingddong9s-projects.vercel.app}
+  schema:
+    validation:
+      enabled: ${APP_SCHEMA_VALIDATION_ENABLED:true}
+  naver:
+    client-id: ${NAVER_CLIENT_ID:}
+    secret-key: ${NAVER_SECRET_KEY:}
+  kakao:
+    user-info-url: ${KAKAO_USER_INFO_URL:https://kapi.kakao.com/v2/user/me}
+  supabase:
+    api-url: ${SUPABASE_API_URL:}
+    service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
+  push:
+    vapid-public-key: ${VAPID_PUBLIC_KEY:}
+    vapid-private-key: ${VAPID_PRIVATE_KEY:}
+    vapid-subject: ${VAPID_SUBJECT:mailto:admin@sch.ac.kr}
+    allowed-hosts: ${PUSH_ALLOWED_HOSTS:}
