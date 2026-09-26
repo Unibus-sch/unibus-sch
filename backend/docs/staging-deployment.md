@@ -7,7 +7,9 @@ DNS, frontend API base URLs, AWS resources, or the production Supabase project.
 
 - `Dockerfile` builds the same immutable image for staging and a later production rollout.
 - `compose.staging.yaml` runs that image with the `staging` Spring profile, a read-only root
-  filesystem, dropped Linux capabilities, bounded resources, health checks, and rotated logs.
+  filesystem, dropped Linux capabilities, bounded resources, health checks, and CloudWatch logs.
+- `scripts/deploy-staging.sh` reads the named staging secret on the EC2 host, deploys only an
+  immutable ECR digest, checks readiness, and restores the previous digest if readiness fails.
 - `.env.staging.example` contains names and placeholders only. Copy it to `.env.staging` on the
   staging host; the populated file is ignored by Git and must be mode `0600`.
 - `application-staging.yml` fails startup when required integration values are absent. Database
@@ -43,7 +45,8 @@ AWS networking, IAM, Secrets Manager, health checks, image digests, and acceptan
 | `DB_CONNECTION_TIMEOUT_MS`, `DB_VALIDATION_TIMEOUT_MS` | no | no | Database timeout controls |
 | `UNIBUS_LOG_FORMAT` | no | no | Console format; defaults to `logstash` JSON |
 | `UNIBUS_LOG_LEVEL_ROOT`, `UNIBUS_LOG_LEVEL_APP` | no | no | Root and application levels; default `INFO` |
-| `UNIBUS_DOCKER_LOG_MAX_SIZE`, `UNIBUS_DOCKER_LOG_MAX_FILE` | no | no | Docker log rotation limits |
+| `AWS_REGION` | no | no | CloudWatch Logs region; staging defaults to `ap-northeast-2` |
+| `UNIBUS_AWS_LOG_GROUP`, `UNIBUS_AWS_LOG_STREAM` | no | no | Existing staging CloudWatch log destination |
 | `UNIBUS_STAGING_CPU_LIMIT`, `UNIBUS_STAGING_MEMORY_LIMIT` | no | no | Container resource limits |
 
 Inject secrets from the deployment platform's secret manager whenever possible. Environment
@@ -129,11 +132,13 @@ not `latest`, so a deploy and rollback always use known bytes.
 
 ## Logs
 
-Spring writes Logstash JSON to standard output. Docker rotates the outer `json-file` log at 10 MiB
-and retains five files by default. Review recent logs without rendering environment variables:
+Spring writes Logstash JSON to standard output. Docker sends that output to the existing
+`/unibus/staging/backend` CloudWatch log group in `ap-northeast-2`. The EC2 role, not the GitHub
+Actions role, receives permission to create streams and put events in this one log group. Review
+recent logs without rendering environment variables:
 
 ```bash
-docker compose --env-file .env.staging -f compose.staging.yaml logs --since 10m api
+aws logs tail /unibus/staging/backend --region ap-northeast-2 --since 10m
 ```
 
 Application logs must not contain tokens, request bodies, passwords, database URLs, service-role

@@ -48,11 +48,12 @@ services:
       start_period: 45s
       retries: 4
     logging:
-      driver: json-file
+      driver: awslogs
       options:
-        max-size: "${UNIBUS_DOCKER_LOG_MAX_SIZE:-10m}"
-        max-file: "${UNIBUS_DOCKER_LOG_MAX_FILE:-5}"
-        compress: "true"
+        awslogs-region: "${AWS_REGION:-ap-northeast-2}"
+        awslogs-group: "${UNIBUS_AWS_LOG_GROUP:-/unibus/staging/backend}"
+        awslogs-stream: "${UNIBUS_AWS_LOG_STREAM:-api}"
+        awslogs-create-group: "false"
     deploy:
       resources:
         limits:

@@ -5,7 +5,7 @@ does not create, update, or authorize any AWS or production resource.
 
 ## Deliverables
 
-- Git branch: `codex/spring-migration`
+- Git branch: `feature/server-setting`
 - Container build: `backend/Dockerfile`
 - Provider-neutral runtime reference: `backend/compose.staging.yaml`
 - Placeholder-only configuration: `backend/.env.staging.example`
@@ -13,6 +13,7 @@ does not create, update, or authorize any AWS or production resource.
 - Deployment and rollback runbook: `backend/docs/staging-deployment.md`
 - Read-only post-deploy check: `npm run verify:staging`
 - CI verification: `.github/workflows/spring-backend-ci.yml`
+- Staging deployment: `.github/workflows/staging-backend-deploy.yml`
 
 Record the exact Git commit, image digest, deployment timestamp, deployer, and previous known-good
 digest in the release ticket. Do not use a mutable `latest` tag.
