@@ -9,7 +9,7 @@ readonly APP_DIR="/opt/unibus/backend"
 readonly RELEASE_DIR="${APP_DIR}/releases"
 readonly ENV_FILE="${APP_DIR}/.env.staging"
 readonly COMPOSE_FILE="${APP_DIR}/compose.staging.yaml"
-readonly EXPECTED_IMAGE_PREFIX="041443079423.dkr.ecr.ap-northeast-2.amazonaws.com/unibus-backend-staging@sha256:"
+readonly EXPECTED_IMAGE_PREFIX="041443079423.dkr.ecr.ap-northeast-2.amazonaws.com/unibus-backend@sha256:"
 
 image_uri="${1:-}"
 git_sha="${2:-}"
