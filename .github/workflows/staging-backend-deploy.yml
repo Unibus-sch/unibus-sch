@@ -1,6 +1,12 @@
 name: Deploy Spring Backend to Staging
 
 on:
+  push:
+    branches:
+      - feature/server-setting
+    paths:
+      - 'backend/**'
+      - '.github/workflows/staging-backend-deploy.yml'
   workflow_dispatch:
     inputs:
       confirmation:
@@ -26,7 +32,9 @@ env:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/feature/server-setting' && inputs.confirmation == 'deploy-staging'
+    if: >-
+      github.ref == 'refs/heads/feature/server-setting' &&
+      (github.event_name == 'push' || inputs.confirmation == 'deploy-staging')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     environment: staging
