@@ -163,6 +163,11 @@ jobs:
             --output text)"
 
           echo "SSM command status: ${invocation_status}"
+          {
+            echo "### Staging deployment"
+            echo "- SSM command status: \`${invocation_status}\`"
+            echo "- Deployed digest: \`${IMAGE_URI##*@}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
           if [[ ${wait_status} -ne 0 || "${invocation_status}" != "Success" ]]; then
             exit 1
           fi
