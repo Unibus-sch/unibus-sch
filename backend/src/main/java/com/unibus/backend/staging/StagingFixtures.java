@@ -29,6 +29,13 @@ public final class StagingFixtures {
         catch (Exception error) {
             // Never dump a driver exception, connection URL, hash, password or account data.
             System.err.println("Staging fixture preparation failed. Check target, secret configuration, schema and fixture ID collisions; no secrets are logged.");
+            Throwable cause = error;
+            while (cause.getCause() != null && cause.getCause() != cause) cause = cause.getCause();
+            System.err.println("Failure category: " + cause.getClass().getSimpleName());
+            if (cause instanceof java.sql.SQLException sql) {
+                String state = sql.getSQLState();
+                if (state != null && state.matches("[A-Z0-9]{5}")) System.err.println("SQL state: " + state);
+            }
             System.exit(1);
         }
     }

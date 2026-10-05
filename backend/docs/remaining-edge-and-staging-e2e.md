@@ -92,6 +92,26 @@ Edge 배포나 Supabase 접속 없는 대체 경로 계약 검증이며, 실제 
 
 ## 비밀값을 안전하게 설정하고 테스트 데이터를 준비하는 방법
 
+### 실제 스테이징 등록 결과 — 2026-10-05
+
+로컬 설정 준비 후 사용자 승인을 받아 테스트 관리자·기사 각 1명, 통학 노선 2개,
+정류장 4개, 운행 중이 아닌 테스트 버스 1대, 테스트 공지 1개를 등록했습니다.
+기존 노선 수정 옵션은 사용하지 않았고, 기존 사용자·토큰 삭제 또는 교체는 하지 않았습니다.
+이미지는 로컬 PNG 생성까지만 완료했으며 실제 Storage 업로드와 AWS·Vercel 배포는 아직 하지 않았습니다.
+
+최초 접속은 CA 인증서 파일 누락으로 중단되었습니다. Supabase 설정 화면에서 제공하는
+`https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt`를
+`backend/build/staging-fixtures/supabase-ca.crt`로 내려받고, 실행 시 JDBC URL에
+`sslrootcert`를 추가해 정상 등록했습니다. 로컬 비밀 설정 파일 자체는 변경하지 않았습니다.
+다시 실행할 때도 `sslmode=verify-full`을 유지하고 JDBC URL에 아래 매개변수를 추가해야 합니다.
+
+```text
+&sslrootcert=/Users/gwonjaewon/Desktop/unibus-sch-spring-migration/backend/build/staging-fixtures/supabase-ca.crt
+```
+
+이 인증서는 공개 CA 인증서이며 Git에서 제외되는 빌드 폴더에 저장했습니다.
+도구 실패 시 비밀값을 출력하지 않고 예외 종류와 SQL 상태 코드만 표시하도록 진단을 보강했습니다.
+
 `backend/.env.staging-e2e.example`을 참고해 로컬 편집기에서 값을 입력하고
 Git에서 제외되는 `backend/.env.staging-e2e.local`로 저장합니다. 권한을 제한하고 제외 여부를 확인합니다.
 
