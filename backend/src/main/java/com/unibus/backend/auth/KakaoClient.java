@@ -36,9 +36,9 @@ class KakaoClient {
             }
             JsonNode account = body.path("kakao_account");
             JsonNode profile = account.path("profile");
-            String email = account.path("email").stringValue();
+            String email = account.path("email").asString(null);
             String name = profile.path("nickname").asString("Kakao User");
-            String profileImage = profile.path("profile_image_url").stringValue();
+            String profileImage = profile.path("profile_image_url").asString(null);
             return KakaoLookup.valid(new KakaoProfile(id, email, name, profileImage));
         } catch (RestClientResponseException error) {
             return KakaoLookup.invalidToken();
