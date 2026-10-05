@@ -1,57 +1,59 @@
-# Remaining Edge migration and staging E2E handoff
+# 남은 Edge API 이전 및 스테이징 E2E 인수인계
 
-Work is isolated to `/Users/gwonjaewon/Desktop/unibus-sch-spring-migration` on
-`codex/spring-migration`. This checkpoint does not deploy AWS/Vercel or modify any remote DB.
-The operator chose tools/documentation preparation; real staging account/data creation is pending.
+작업공간: `/Users/gwonjaewon/Desktop/unibus-sch-spring-migration`
 
-## Audit and API contracts
+작업 브랜치: `codex/spring-migration`
 
-The audit covers `src`, `utils`, the Vercel `api` directory, all Edge route handlers, their auth
-middleware and SQL migrations. No browser `supabase.functions.invoke` calls were found.
+원본 프로젝트는 수정하지 않았습니다. 사용자가 선택한 범위에 따라 실행 도구·문서 준비까지만 진행했습니다.
+실제 스테이징 계정·데이터 등록, 원격 DB 변경, AWS·Vercel·DNS 변경은 하지 않았습니다.
 
-| Previously remaining call | Spring endpoint | Frontend group | Preserved behavior |
+## 조사 결과와 API 계약
+
+`src`, `utils`, Vercel `api` 디렉터리, Edge 라우트 전체, 인증 미들웨어와 SQL 마이그레이션을 조사했습니다.
+브라우저 코드에서 `supabase.functions.invoke` 호출은 발견되지 않았습니다.
+
+| 남아 있던 호출 | 이전한 Spring API | 프런트 API 그룹 | 유지한 동작 |
 |---|---|---|---|
-| campus route | GET `/campus/path` | public | anonymous, `success/data/path/stops/cached`, `[lng,lat]`, marker fields |
-| user report | POST `/reports` | auth | application session, validation, nullable related IDs, 5 requests / 600 sec |
-| legacy bus GPS | POST `/buses/{id}/location` | driver | driver/admin session, active bus ownership, validation, history response |
+| 캠퍼스 경로 조회 | GET `/campus/path` | public | 비로그인 조회, `success/data/path/stops/cached`, `[lng,lat]`, 정류장 필드 |
+| 사용자 문의 접수 | POST `/reports` | auth | 앱 세션 인증, 입력 검증, 관련 ID의 null 처리, 600초당 5회 제한 |
+| 기존 버스 GPS 등록 | POST `/buses/{id}/location` | driver | 기사·관리자 인증, 운행 버스 소유권, 입력 검증, 위치 이력 응답 |
 
-Supabase PostgreSQL, Realtime and Storage remain in use. API base fallback to Edge is preserved
-for legacy configuration, but all four required staging base URLs point to Spring. The default
-request destination is now the public API group, not an unconditional Edge destination.
-`GET /notifications/vapid-public-key` was already explicitly routed to Spring; it required no migration.
+Supabase PostgreSQL·Realtime·Storage는 그대로 유지합니다. 기존 설정과의 호환성을 위해
+API 주소가 없을 때 Edge를 사용하는 대체 경로는 남겨 두었지만, 스테이징 필수 API 주소 4개는 모두 Spring을 가리켜야 합니다.
+기본 요청 대상도 무조건 Edge가 아니라 public API 그룹으로 변경했습니다.
+`GET /notifications/vapid-public-key`는 이미 Spring으로 연결되어 추가 이전이 필요하지 않았습니다.
 
-Campus behavior was derived from `supabase/functions/make-server/routes/campus.tsx`:
+캠퍼스 경로는 `supabase/functions/make-server/routes/campus.tsx`를 기준으로 구현했습니다.
 
-- Find fixed campus UUID first, otherwise a `shuttle` route whose name includes `학내순환`.
-  Spring deterministically sorts multiple name matches by ID; Edge's `limit(1)` was unordered.
-- Use stored stops in `stop_order` and shape points in `after_stop_order, point_order` order.
-  If fewer than two raw stops exist, use five fixed marker stops plus the Naver shaping point.
-  Missing coordinates are omitted from visible stored markers; a single valid marker retains
-  Edge's degenerate 20-point fallback behavior rather than inventing a different route.
-- Hash seven-decimal `[lng,lat]` strings with SHA-256; reuse matching DB cache, then memory cache.
-  Generated responses have `cached:false`; reused responses have `cached:true`.
-- Cache hits bypass the 30 requests / 600 sec generation limiter. Memory cache lives 30 minutes.
-- Use existing Naver Directions client and fall back to 20 interpolated points per visible-stop
-  segment including the return to the first stop. No Naver secret is sent to the browser.
-- `Cache-Control: public, max-age=300, stale-while-revalidate=3600`; authenticated requests still
-  receive the existing private/no-store override. Cache generation may write `route_path_cache`.
-- Cache writes are best effort, as on Edge. DB read failures return the Edge global `500`
-  `{ "success": false, "error": "Internal server error" }` envelope.
+- 고정 캠퍼스 UUID를 먼저 조회하고, 없으면 이름에 `학내순환`이 포함된 `shuttle` 노선을 조회합니다.
+  여러 노선이 일치하면 Spring은 ID순으로 선택합니다. 기존 Edge의 `limit(1)`에는 정렬 조건이 없었습니다.
+- 정류장은 `stop_order`, 경로 보조점은 `after_stop_order, point_order` 순입니다.
+  원본 정류장이 2개 미만이면 고정 정류장 5개와 네이버 경로용 보조점을 사용합니다.
+  좌표가 없는 정류장은 표시 목록에서 제외합니다. 유효 정류장이 1개만 남으면 Edge처럼 동일 좌표의 20개 점을 반환합니다.
+- 소수점 7자리 `[lng,lat]` 문자열을 SHA-256으로 해시합니다. 일치하는 DB 캐시를 먼저 사용하고 다음으로 메모리 캐시를 확인합니다.
+  새 응답은 `cached:false`, 캐시 응답은 `cached:true`입니다.
+- 캐시 적중 시 생성 횟수 제한을 적용하지 않습니다. 생성 요청은 600초당 30회, 메모리 캐시는 30분입니다.
+- 기존 Naver Directions 클라이언트를 사용합니다. 실패 시 정류장 구간마다 20개 점으로 보간하며 마지막에서 첫 정류장으로 돌아오는 구간도 포함합니다.
+  Naver Secret은 브라우저에 전달하지 않습니다.
+- `Cache-Control: public, max-age=300, stale-while-revalidate=3600`을 유지합니다.
+  인증 요청은 기존 private/no-store 설정이 우선합니다. 경로 생성 시 `route_path_cache`에 저장할 수 있습니다.
+- 캐시 저장 실패는 Edge처럼 전체 요청 실패로 처리하지 않습니다. DB 조회 실패는 기존 전역 오류와 같은 500 응답
+  `{ "success": false, "error": "Internal server error" }`을 반환합니다.
 
-Legacy GPS writes only `bus_locations`, exactly like Edge. It is **not** the live Realtime GPS
-endpoint: existing `/driver/location` uses `record_bus_location` to update `bus_latest_state` and
-sample history. Frontend active driver operation already uses `/driver/location`. The legacy
-endpoint remains available for compatibility and serializes its write with bus start/stop locks.
+기존 GPS API는 Edge처럼 `bus_locations`에만 이력을 저장하며 실시간 위치 갱신 API가 아닙니다.
+실제 운행 화면은 `/driver/location`을 사용하며, 이 API의 `record_bus_location`이
+`bus_latest_state`와 샘플 위치 이력을 갱신합니다. 기존 GPS API는 호환성을 위해 유지하고,
+운행 시작·종료와 같은 버스 잠금을 사용해 쓰기 충돌을 방지합니다.
 
-`api/campus-route.ts` is a separate legacy Vercel Function, not a Supabase Edge invocation.
-No current frontend caller was found. It is preserved for possible external callers; do not add
-server secrets to Vercel to activate it. Retirement requires confirming external usage separately.
+`api/campus-route.ts`는 Supabase Edge 호출이 아니라 별도의 기존 Vercel Function입니다.
+현재 프런트 호출은 없지만 외부 호출 가능성이 있어 보존했습니다. 이를 활성화하려고 Vercel에 서버 Secret을 추가하면 안 됩니다.
+삭제하려면 외부 사용 여부를 먼저 확인해야 합니다.
 
-## Local verification
+## 로컬 검증 방법
 
 ```bash
 cd /Users/gwonjaewon/Desktop/unibus-sch-spring-migration/backend
-./gradlew test build prepareStagingFixtures --no-daemon
+./gradlew test build prepareStagingFixtures --no-daemon --no-configuration-cache
 cd ..
 npm run test:api-routing
 npm run test:env
@@ -60,66 +62,65 @@ npm run test:staging-fixtures
 npm run typecheck
 ```
 
-Gradle integration tests use disposable local PostgreSQL containers, not the staging DB. Tests
-cover campus DB/cache/fallback/rate limiting, report permissions/validation/quota and legacy GPS
-ownership/history behavior. Fixture tests assert bcrypt compatibility, idempotency, original
-users/tokens unchanged, explicit-only route correction, and valid PNG generation. The image script
-is tested with local request doubles; real Storage/Kakao/Realtime E2E still requires staging access.
-`verify:parity` also includes warmed campus-path and new authentication failures, and still refuses
-non-loopback targets. Updating it is not evidence that a live Edge comparison was run.
+Gradle 통합 테스트는 스테이징 DB가 아닌 임시 로컬 PostgreSQL 컨테이너를 사용합니다.
+캠퍼스 DB·캐시·대체 경로·횟수 제한, 문의 권한·입력 검증·횟수 제한, 기존 GPS 소유권·이력을 검증합니다.
+데이터 준비 도구는 bcrypt 호환성, 반복 실행 안전성, 기존 사용자·토큰 보존,
+명시한 노선만 수정하는 동작과 정상 PNG 생성을 검증합니다.
+이미지 스크립트는 로컬 요청 대역으로 검증했습니다. 실제 Storage·카카오·Realtime E2E에는 스테이징 권한이 필요합니다.
 
-`CAMPUS_SPRING_URL=http://127.0.0.1:LOCAL_PORT npm run verify:campus-contract` executes the actual
-unchanged Edge campus handler against an empty in-memory DB adapter, disables Naver configuration,
-and compares its warmed fallback JSON to local Spring. This verifies the exact fallback contract
-without deploying Edge or accessing Supabase; it is not a full live Edge/Supabase parity test.
+`verify:parity`에는 캐시 생성 후 캠퍼스 조회와 신규 인증 실패 비교를 추가했습니다.
+로컬 주소만 허용하며, 도구 수정 자체가 실제 Edge 비교 실행을 의미하지는 않습니다.
 
-### Checkpoint verification (2026-10-05)
+`CAMPUS_SPRING_URL=http://127.0.0.1:LOCAL_PORT npm run verify:campus-contract`는
+수정하지 않은 Edge 캠퍼스 코드를 빈 메모리 DB 어댑터로 실행합니다.
+Naver 설정을 끄고 캐시 생성 후 대체 경로 JSON을 로컬 Spring과 비교합니다.
+Edge 배포나 Supabase 접속 없는 대체 경로 계약 검증이며, 실제 Edge·Supabase 전체 차등 테스트는 아닙니다.
 
-- Gradle `test build prepareStagingFixtures --no-daemon --no-configuration-cache`: passed;
-  61 tests, zero failures/errors/skips.
-- Frontend typecheck and Vite build: passed with synthetic local-only environment values.
-- Node API-routing, fixture-upload, environment and smoke tests: all 12 passed.
-- Docker image build and container health: passed. Image ID:
+### 체크포인트 검증 결과 — 2026-10-05
+
+- Gradle `test build prepareStagingFixtures --no-daemon --no-configuration-cache` 통과: 테스트 61개, 실패·오류·건너뛰기 0개.
+- 프런트 타입 검사와 Vite 빌드 통과: 실제 키가 아닌 로컬 검증용 환경변수 사용.
+- Node API 연결·이미지 준비·환경변수·스모크 테스트 12개 모두 통과.
+- Docker 이미지 빌드와 컨테이너 헬스체크 통과. 이미지 ID:
   `sha256:16950b959a94365b5ff93cd2a0e3f6bb6e33833657c4a5c64367f8b8f6317898`.
-- Latest Docker image: 11 HTTP smoke checks plus report creation and legacy GPS writes passed
-  against disposable local PostgreSQL. Campus JSON/cache headers exactly matched the unchanged
-  Edge source using the local adapter described above.
-- Real Naver calls, live Edge/Supabase differential regression, browser social login, real
-  Storage uploads, Realtime delivery and Web Push were **not** exercised in this checkpoint.
-- No remote accounts/data were created, no existing users/tokens deleted, and no AWS/Vercel/DNS
-  deployment or GitHub push was performed. Disposable local containers/network were removed
-  after verification; the built image and synthetic PNG remain available locally.
+- 최신 Docker 이미지와 임시 DB에서 HTTP 스모크 검사 11개, 문의 생성, 기존 GPS 쓰기 검증 통과.
+  로컬 어댑터로 실행한 Edge 원본과 캠퍼스 JSON·캐시 헤더가 정확히 일치함을 확인.
+- 실제 Naver 호출, 실제 Edge·Supabase 차등 회귀, 브라우저 소셜 로그인, 실제 Storage 업로드,
+  Realtime 전달, Web Push는 이번 체크포인트에서 검증하지 않음.
+- 원격 계정·데이터 생성, 기존 사용자·토큰 삭제, AWS·Vercel·DNS 변경, GitHub 푸시는 하지 않음.
+  임시 컨테이너·네트워크는 제거했으며 빌드 이미지와 테스트 PNG는 로컬에 보존.
 
-## Safe local secrets and staging fixtures
+## 비밀값을 안전하게 설정하고 테스트 데이터를 준비하는 방법
 
-Use `backend/.env.staging-e2e.example` as a template. In a local editor, save the filled configuration
-as `backend/.env.staging-e2e.local`, then restrict its permissions:
+`backend/.env.staging-e2e.example`을 참고해 로컬 편집기에서 값을 입력하고
+Git에서 제외되는 `backend/.env.staging-e2e.local`로 저장합니다. 권한을 제한하고 제외 여부를 확인합니다.
 
 ```bash
 chmod 600 backend/.env.staging-e2e.local
 git check-ignore backend/.env.staging-e2e.local
 ```
 
-Get DB connection details from the **staging** project Connect screen. Keep the password in its
-separate variable, never the JDBC URL. The guard accepts only `db.srxzkpdtxmqrtcxgpeyl.supabase.co`
-or a `*.pooler.supabase.com` host with username `postgres.srxzkpdtxmqrtcxgpeyl` and database
-`postgres`. Require `sslmode=verify-full`; configure the provider CA via `sslrootcert` if needed.
-Do not weaken TLS verification to get past a certificate failure.
+DB 접속정보는 스테이징 Supabase 프로젝트의 Connect 화면에서 확인합니다.
+비밀번호는 별도 환경변수에 저장하고 JDBC URL에 넣지 않습니다.
+안전장치는 `db.srxzkpdtxmqrtcxgpeyl.supabase.co` 또는 `*.pooler.supabase.com` 호스트만 허용합니다.
+Pooler 사용자 이름은 `postgres.srxzkpdtxmqrtcxgpeyl`, DB 이름은 `postgres`여야 합니다.
+`sslmode=verify-full`이 필수이며 필요하면 공급자의 CA 인증서를 `sslrootcert`로 지정합니다.
+인증서 오류 때문에 TLS 검증 수준을 낮추면 안 됩니다.
 
-Fill new unique admin/driver passwords (16+ characters, at most 72 UTF-8 bytes) using a password
-manager. The two synthetic emails must be distinct and end in `@example.invalid`. Passwords,
-connection values and hashes must never be pasted into chat, GitHub, shell history or logs.
-The runner logs only aggregate completion or a sanitized error, never exception details.
+비밀번호 관리 도구로 관리자·기사용 새 비밀번호를 각각 생성합니다.
+16자 이상, UTF-8 기준 최대 72바이트이며 두 이메일은 서로 다르고 `@example.invalid`로 끝나야 합니다.
+비밀번호·접속정보·해시는 채팅, GitHub, 셸 명령 기록이나 로그에 붙여 넣지 않습니다.
+도구는 완료 요약이나 비밀값이 제거된 오류만 출력하며 예외 상세 정보는 출력하지 않습니다.
 
-Preparation mode needs no remote credentials and only creates a synthetic local PNG:
+준비 모드는 원격 접속정보 없이 로컬 테스트 PNG만 생성합니다.
 
 ```bash
 cd backend
 ./gradlew prepareStagingFixtures --no-daemon
 ```
 
-After the designated operator verifies the local file and the target project, load it **without
-shell tracing**, then opt into the writes. The loaded file must be trusted shell assignments:
+실제 등록은 담당자가 로컬 파일과 대상 프로젝트를 확인한 뒤 명시적으로 실행합니다.
+파일은 신뢰할 수 있는 셸 변수 설정 파일이어야 하며 명령 추적을 끈 상태에서 읽어 들입니다.
 
 ```bash
 cd backend
@@ -130,39 +131,43 @@ set +a
 STAGING_FIXTURE_MODE=apply ./gradlew prepareStagingFixtures --no-daemon --no-configuration-cache
 ```
 
-This creates reserved `[E2E]` fixtures: two local bcrypt accounts, two Seoul commuter directions
-with explicit `[출발]`/`[도착]` name prefixes and `region=서울`, four stops, one active (not running)
-bus assigned to the fixture driver, and one low-priority notice. Synthetic timetables are not real
-operating data. Relational writes share one transaction; no schema changes are made. Existing rows
-are not reset; ID collisions are rejected, and reruns preserve fixture passwords and sessions.
-Do not run with Gradle `--info`/`--debug`, SQL bind logging or shell `set -x`.
-The task is incompatible with configuration caching, and the apply command explicitly disables
-that cache to keep the secret environment out of Gradle's saved task state.
+등록 대상은 예약된 `[E2E]` 테스트 데이터입니다.
 
-The existing Seoul station route's real direction is **not inferred from its name**. To correct it,
-the operator must inspect stops/timetable and set `STAGING_COMMUTER_ROUTE_ID`,
-`STAGING_COMMUTER_REGION`, `STAGING_COMMUTER_DIRECTION=to-school` or `from-school` in the local
-file. Only that route changes. Run separately for the other direction if two real routes exist.
+- bcrypt 계정 2개: 관리자 1명, 기사 1명.
+- 서울 통학 노선 2개: `[출발]`·`[도착]` 접두사로 방향 구분, `region=서울`.
+- 정류장 4개와 테스트 기사에게 배정된 활성 버스 1대. 운행 중 상태로 만들지는 않습니다.
+- 낮은 우선순위의 테스트 공지 1개.
 
-After Spring staging deploy and Storage readiness, upload the PNG and link only the fixture notice:
+테스트 시간표는 실제 운행 정보가 아닙니다. DB 쓰기는 한 트랜잭션으로 처리하며 스키마는 변경하지 않습니다.
+기존 행은 초기화하지 않고 ID 충돌은 거부합니다. 반복 실행해도 테스트 계정 비밀번호와 세션을 보존합니다.
+Gradle `--info`·`--debug`, SQL 바인딩 값 로깅, 셸 `set -x`를 사용하지 마세요.
+비밀 환경변수가 Gradle 저장 상태에 포함되지 않도록 이 작업은 configuration cache를 지원하지 않으며
+실제 등록 명령에도 `--no-configuration-cache`를 명시합니다.
+
+기존 서울역 노선의 방향은 이름만 보고 추측하지 않습니다.
+담당자가 정류장·시간표를 확인한 뒤 로컬 파일의 `STAGING_COMMUTER_ROUTE_ID`,
+`STAGING_COMMUTER_REGION`, `STAGING_COMMUTER_DIRECTION=to-school` 또는 `from-school`을 설정해야 합니다.
+지정한 노선만 수정합니다. 등교·하교 노선이 각각 존재하면 방향별로 따로 실행합니다.
+
+Spring 배포와 Storage 준비가 완료되면 PNG를 업로드하고 테스트 공지에만 연결합니다.
+위에서 환경변수를 읽은 동일한 터미널에서 실행합니다.
 
 ```bash
 cd ..
 STAGING_FIXTURE_MODE=apply npm run prepare:staging-image
 ```
 
-The image script accepts only `https://api-staging.unibus-sch.com` and the exact staging project.
-It logs in as the reserved fixture admin, uploads PNG through Spring `/notices/images`, validates
-the resulting staging Storage URL, updates the fixture notice, and logs out its own new session.
-It does not require a local service-role key: that key stays in the AWS backend runtime.
-Storage upload and notice update cannot be one DB transaction. If upload succeeds and linking
-fails, record the orphaned object for later targeted cleanup; this tool does not delete it.
+이미지 스크립트는 정확한 스테이징 프로젝트와 `https://api-staging.unibus-sch.com`만 허용합니다.
+예약된 테스트 관리자로 로그인하여 Spring `/notices/images`로 PNG를 업로드하고,
+스테이징 Storage URL인지 검증한 뒤 테스트 공지에 연결합니다. 마지막에 새로 만든 세션만 로그아웃합니다.
+로컬 service-role key는 필요하지 않으며 AWS 백엔드 실행 환경에만 둡니다.
+Storage 업로드와 공지 수정은 한 DB 트랜잭션으로 묶을 수 없습니다.
+업로드 후 연결이 실패하면 남은 파일을 기록해 추후 개별 정리합니다. 이 도구는 파일을 삭제하지 않습니다.
 
-## Existing two users and tokens: preserve pending provenance
+## 기존 사용자 2건·토큰 2건: 생성 목적 확인 전 보존
 
-Do not delete or rotate these rows. Ask the AWS operator for the original test, timestamp and
-owner. Use the staging SQL Editor for metadata-only inspection (never select `token` or
-`password_hash`):
+기존 행을 삭제하거나 토큰을 교체하지 마세요. AWS 담당자에게 어떤 테스트에서 언제, 누가 생성했는지 확인합니다.
+스테이징 SQL Editor에서는 메타데이터만 조회합니다. `token`·`password_hash`를 조회하지 않습니다.
 
 ```sql
 SELECT u.id, u.role, u.provider, u.created_at,
@@ -176,38 +181,34 @@ SELECT id, name, type, region, schedule
 FROM public.routes WHERE type IN ('commute', 'commuter') ORDER BY name;
 ```
 
-Rows alone cannot prove creation purpose. Keep the operator's answer in the release record before
-any separate, narrowly targeted cleanup is considered. No cleanup command is included here.
+행 정보만으로 생성 목적을 확정할 수는 없습니다. 담당자 답변을 배포 기록에 남긴 후
+별도 승인된 범위에서 특정 행만 정리할지 판단합니다. 이 문서에는 삭제 명령을 포함하지 않습니다.
 
-## AWS and frontend redeployment order
+## AWS 담당자에게 전달할 재배포 순서
 
-1. Share this checkpoint SHA and the reviewed patch (or publish the migration branch in a separately
-   authorized push) with the AWS owner. A local-only SHA is not yet fetchable from GitHub. They apply/cherry-pick it onto
-   `feature/server-setting`, review conflicts against their server configuration, and build the
-   backend image from that exact resulting SHA. Do not merge to `main`.
-2. Backend runtime already needs staging DB/API/service-role, `NAVER_CLIENT_ID`,
-   `NAVER_SECRET_KEY`, VAPID public/private/subject and `PUSH_ALLOWED_HOSTS`. Keep these in the
-   existing AWS secret injection mechanism. Spring uses `APP_CORS_ALLOWED_ORIGINS`, not Edge
-   `ALLOWED_ORIGINS`. Include `https://unibus-sch.com` and any approved preview origin.
-3. Deploy backend first; require startup schema validation and readiness. No new DB schema
-   migration is required by this checkpoint. Check anonymous `/campus/path` success and GPS/report
-   auth rejections before promoting the frontend commit.
-4. Prepare staging fixtures using the above local operator commands; preserve old users/tokens.
-5. Confirm `unibus-staging` Production Branch is `feature/server-setting`; all four API bases use
-   `https://api-staging.unibus-sch.com`. Supabase values reference `srxzkpdtxmqrtcxgpeyl`. Build the
-   same frontend SHA; do not copy server secrets to Vercel. CLI users should upgrade the locally
-   installed Vercel 60.1.3 with `npm i -g vercel@latest` before using current deployment commands.
-6. Run the existing read smoke suite, then login as each staging fixture: notices create/update/
-   delete **new test notices only**, PNG upload, commuter direction tabs, assigned bus start,
-   `/driver/location` GPS, state restoration and admin force-stop. Confirm Network shows zero
-   `/functions/v1/make-server` requests. Check Realtime notice and latest-GPS events separately.
-7. Test Kakao using a new consenting staging tester. Configure the frontend Kakao application's
-   allowed domain and any OAuth Redirect URI according to `src/app/services/kakao.ts`; do not
-   copy production users/tokens. Personal social login and real Push subscription need the tester.
-8. Record SHA, image digest, deploy time, checks and fixture IDs. Retain previous backend image
-   and frontend deployment. Follow `staging-deployment.md` for rollback; roll back both code
-   versions together if necessary. A missing staging Edge Function cannot serve as a rollback.
+1. 체크포인트 SHA와 검토된 패치를 전달하거나, 별도 푸시 승인을 받아 마이그레이션 브랜치를 게시합니다.
+   로컬 SHA만으로는 GitHub에서 가져올 수 없습니다. AWS 담당자는 `feature/server-setting`에 적용하거나 cherry-pick하고
+   서버 설정 충돌을 검토한 뒤 확정된 커밋으로 백엔드 이미지를 빌드합니다. `main`에 병합하지 않습니다.
+2. 백엔드에는 스테이징 DB·API·service-role, `NAVER_CLIENT_ID`, `NAVER_SECRET_KEY`,
+   VAPID 공개키·개인키·subject, `PUSH_ALLOWED_HOSTS`가 필요합니다. 기존 AWS 비밀값 주입 방식으로 관리합니다.
+   Spring CORS는 Edge의 `ALLOWED_ORIGINS`가 아닌 `APP_CORS_ALLOWED_ORIGINS`입니다.
+   `https://unibus-sch.com`과 승인된 프리뷰 주소를 포함합니다.
+3. 백엔드를 먼저 배포하고 시작 시 스키마 검증과 readiness를 확인합니다. 이번 변경에는 새 DB 스키마 마이그레이션이 필요하지 않습니다.
+   비로그인 `/campus/path` 성공과 GPS·문의 미인증 요청 거부를 확인한 뒤 프런트를 배포합니다.
+4. 위 절차로 스테이징 테스트 데이터를 준비합니다. 기존 사용자·토큰은 보존합니다.
+5. Vercel `unibus-staging` Production Branch가 `feature/server-setting`인지 확인합니다.
+   API 주소 4개는 모두 `https://api-staging.unibus-sch.com`, Supabase는 `srxzkpdtxmqrtcxgpeyl`이어야 합니다.
+   동일한 코드 버전의 프런트를 빌드하고 서버 Secret을 Vercel에 복사하지 않습니다.
+   CLI 사용 시 설치된 Vercel 60.1.3을 `npm i -g vercel@latest`로 업데이트하는 것을 권장합니다.
+6. 읽기 스모크 테스트 후 테스트 관리자·기사로 각각 로그인합니다. 새 테스트 공지만 생성·수정·삭제하고,
+   PNG 업로드, 통학 방향 탭, 배정 버스 운행 시작, `/driver/location` GPS, 상태 복원, 관리자 강제 종료를 확인합니다.
+   브라우저 Network에 `/functions/v1/make-server` 요청이 없는지 확인합니다. Realtime 공지·최신 GPS 이벤트도 별도로 확인합니다.
+7. 동의한 새 스테이징 사용자로 카카오 로그인을 확인합니다. `src/app/services/kakao.ts`를 기준으로
+   프런트 카카오 앱의 허용 도메인과 해당 OAuth Redirect URI를 설정합니다. 운영 사용자·토큰은 복사하지 않습니다.
+   개인 소셜 로그인과 실제 Push 구독에는 테스트 사용자 참여가 필요합니다.
+8. SHA, 이미지 digest, 배포 시각, 검사 결과와 테스트 데이터 ID를 기록합니다. 이전 백엔드 이미지와 프런트 배포를 보존합니다.
+   롤백은 `staging-deployment.md`를 따르며 필요하면 백엔드·프런트를 함께 되돌립니다.
+   미배포된 스테이징 Edge Function은 롤백 대상으로 사용할 수 없습니다.
 
-Account passwords are shared only through the team's password manager or a restricted one-time
-secret channel. Send account role/email/project/expiry separately; never post passwords or tokens
-in GitHub, issue comments, this chat or the AWS handoff text.
+계정 비밀번호는 팀 비밀번호 관리 도구 또는 접근이 제한된 일회성 비밀 전달 채널로만 공유합니다.
+역할·이메일·프로젝트·만료 시점은 별도로 전달하고 비밀번호·토큰은 GitHub·이슈·채팅·AWS 전달 문서에 작성하지 않습니다.
