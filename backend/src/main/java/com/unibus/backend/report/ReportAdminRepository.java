@@ -41,6 +41,20 @@ class ReportAdminRepository {
         );
     }
 
+    ReportResponse create(UUID userId, String category, String title, String details,
+                          String busId, UUID routeId) {
+        UUID id = jdbcTemplate.queryForObject("""
+            INSERT INTO user_reports (user_id, category, title, details, related_bus_id, related_route_id)
+            VALUES (?, ?, ?, ?, ?, ?) RETURNING id
+            """, UUID.class, userId, category, title, details, busId, routeId);
+        ReportResponse row = jdbcTemplate.query(SELECT + " WHERE r.id = ?", (rs, index) -> map(rs), id)
+            .getFirst();
+        // Edge does not join the author on creation; preserve its placeholder fields.
+        return new ReportResponse(row.id(), row.userId(), "알 수 없음", "", row.category(),
+            row.title(), row.details(), row.status(), row.relatedBusId(), row.relatedRouteId(),
+            row.adminNote(), row.resolvedAt(), row.createdAt(), row.updatedAt());
+    }
+
     Optional<ReportResponse> update(UUID id, Map<String, Object> updates) {
         String assignments = String.join(", ", updates.keySet().stream()
             .map(column -> column + " = :" + column).toList());

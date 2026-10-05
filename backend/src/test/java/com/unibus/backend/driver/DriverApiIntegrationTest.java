@@ -267,6 +267,32 @@ class DriverApiIntegrationTest {
         return request("POST", "/driver/start", "{\"busId\":\"SH-ASSIGNED\"}", DRIVER_ONE_TOKEN);
     }
 
+    @Test
+    void legacyGpsPathPreservesPermissionValidationAndHistoryOnlyBehavior() throws Exception {
+        String endpoint = "/buses/SH-ASSIGNED/location";
+        String location = "{\"lat\":36.77,\"lng\":126.93,\"heading\":359.6}";
+        assertThat(request("POST", endpoint, location, null).status()).isEqualTo(401);
+        assertThat(request("POST", endpoint, location, USER_TOKEN).status()).isEqualTo(403);
+        assertThat(request("POST", endpoint, "{}", DRIVER_ONE_TOKEN).status()).isEqualTo(400);
+        assertApiError(request("POST", endpoint, "{", DRIVER_ONE_TOKEN), 500, "Failed to update location");
+        assertApiError(request("POST", endpoint, "null", DRIVER_ONE_TOKEN), 500, "Failed to update location");
+        assertThat(request("POST", endpoint, "{\"lat\":91,\"lng\":126}", DRIVER_ONE_TOKEN).status()).isEqualTo(400);
+        assertThat(request("POST", endpoint, location, DRIVER_ONE_TOKEN).status()).isEqualTo(403);
+        assertThat(startAssignedBus().status()).isEqualTo(200);
+        var result = request("POST", endpoint, location, DRIVER_ONE_TOKEN);
+        assertThat(result.status()).isEqualTo(200);
+        assertThat(result.json().path("data").path("heading").asInt()).isEqualTo(360);
+        assertThat(result.json().path("data").path("speed").asDouble()).isZero();
+        assertThat(result.json().path("data").path("busId").stringValue()).isEqualTo("SH-ASSIGNED");
+        assertThat(request("POST", endpoint, location, DRIVER_TWO_TOKEN).status()).isEqualTo(403);
+        assertThat(request("POST", "/buses/UNKNOWN/location", location, ADMIN_TOKEN).status()).isEqualTo(404);
+        assertThat(request("POST", endpoint, location, ADMIN_TOKEN).status()).isEqualTo(200);
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM bus_locations WHERE bus_id = 'SH-ASSIGNED'", Integer.class)).isEqualTo(2);
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM bus_latest_state WHERE bus_id = 'SH-ASSIGNED'", Integer.class)).isZero();
+        assertThat(request("POST", "/driver/stop", null, DRIVER_ONE_TOKEN).status()).isEqualTo(200);
+        assertThat(request("POST", endpoint, location, DRIVER_ONE_TOKEN).status()).isEqualTo(403);
+    }
+
     private ApiResult request(String method, String path, String body, String token) throws Exception {
         HttpRequest.Builder builder = HttpRequest.newBuilder(uri(path));
         if (token != null) builder.header("X-Auth-Token", token);

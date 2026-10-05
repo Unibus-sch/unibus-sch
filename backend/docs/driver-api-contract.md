@@ -22,6 +22,14 @@ Migrated endpoints:
 - `POST /driver/location`: validate and normalize GPS data, update latest state, and sample history
 - `POST /driver/stop`: complete the active trip and restore its original assigned route
 - `GET /driver/status`: restore the active bus, current route, stops, and trip after app re-entry
+- `POST /buses/{id}/location`: legacy history-only GPS endpoint, now routed through the driver API base
+
+The legacy endpoint checks driver/admin sessions. Drivers may update only their currently running
+bus; admins may update any existing bus. Missing coordinates return `400 Missing required fields`;
+invalid lat/lng, speed outside `0..250`, or heading outside `0..<360` return `400 Invalid location data`.
+It defaults missing speed/heading to zero and rounds heading like Edge (359.6 becomes 360).
+Success `data` contains `busId, lat, lng, speed, heading, timestamp`; it does not update latest-state
+Realtime. Use `/driver/location` for that existing behavior.
 
 All success responses keep the Edge envelope `{ "success": true, "data": ... }`. Route and
 trip fields remain camelCase, while the legacy bus state fields remain `is_running`,

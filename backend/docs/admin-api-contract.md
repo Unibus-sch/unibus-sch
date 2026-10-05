@@ -27,7 +27,13 @@ Web Push subscription management is also migrated, but is not administrator-only
 - `POST /notifications/subscribe` and `POST /notifications/unsubscribe` accept any valid
   `X-Auth-Token` session and return the same `401` token errors as the Edge Function.
 
-The legacy `POST /buses/{id}/location` endpoint and report creation remain on the Edge Function.
+`POST /reports` now accepts any valid application session (not admin-only), preserves the Edge
+category/length/identifier validation and `200` envelope, and limits each user to 5 requests per
+600 seconds. Creation returns `userName: "알 수 없음"`, `userEmail: ""`, nullable related IDs,
+and the default `open` status, matching Edge's unjoined creation response. Missing/invalid/expired
+sessions return the same raw `{ "error": ... }` authentication errors. Malformed JSON, missing
+body and JSON `null` preserve Edge's `500` creation error envelope. The legacy GPS endpoint is
+documented in `driver-api-contract.md`.
 The driver application now sends GPS through the
 migrated `POST /driver/location` endpoint; the legacy bus-location route is retained only for
 clients that have not moved to the driver contract.

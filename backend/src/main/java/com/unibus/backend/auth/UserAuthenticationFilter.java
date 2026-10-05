@@ -33,7 +33,8 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
         if (!"POST".equals(request.getMethod())) return true;
         String path = normalizePath(request.getRequestURI());
         return !"/notifications/subscribe".equals(path)
-            && !"/notifications/unsubscribe".equals(path);
+            && !"/notifications/unsubscribe".equals(path)
+            && !"/reports".equals(path);
     }
 
     @Override

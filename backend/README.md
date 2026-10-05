@@ -1,6 +1,6 @@
 # UniBus Spring Boot backend
 
-This directory is the isolated replacement for `supabase/functions/make-server`. Phase 1 established the runtime and test environment. Phase 2 migrated the public notice, route, and bus read APIs. Phase 3 migrated authentication and shared sessions. Phase 4 migrated administrator-only notice, route, bus, user, report, and notification APIs. Phase 5 migrated driver operations, including trip state, GPS updates, re-entry restoration, and stop handling. Phase 6 connects those Spring writes to Supabase Realtime and Storage and moves browser Web Push subscription management to Spring. Ordinary-user business APIs remain on the Edge Function.
+This directory is the isolated replacement for `supabase/functions/make-server`. Phase 1 established the runtime and test environment. Phase 2 migrated the public notice, route, and bus read APIs. Phase 3 migrated authentication and shared sessions. Phase 4 migrated administrator-only notice, route, bus, user, report, and notification APIs. Phase 5 migrated driver operations, including trip state, GPS updates, re-entry restoration, and stop handling. Phase 6 connects those Spring writes to Supabase Realtime and Storage and moves browser Web Push subscription management to Spring. The remaining campus-path, user-report creation and legacy GPS APIs now also use Spring. See `docs/remaining-edge-and-staging-e2e.md` for the audit and staging preparation.
 
 ## Requirements
 
@@ -29,7 +29,7 @@ export SUPABASE_DB_PASSWORD='postgres'
 
 `GET http://localhost:8080/health` is the compatibility health endpoint. `GET /actuator/health` is used by Docker and infrastructure health checks.
 
-Point the frontend's public reads at Spring while keeping all other requests on Supabase Edge Functions:
+Point each frontend API group at Spring using the corresponding base URL:
 
 ```bash
 VITE_PUBLIC_API_BASE_URL=http://localhost:8080 \

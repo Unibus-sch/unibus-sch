@@ -5,6 +5,11 @@ does not create, update, or authorize any AWS or production resource.
 
 ## Deliverables
 
+The remaining Edge completion checkpoint and staging fixture instructions are in
+[`remaining-edge-and-staging-e2e.md`](remaining-edge-and-staging-e2e.md). Apply that checkpoint
+to `feature/server-setting`, deploy the Spring backend first, then the matching frontend. The
+staging Edge Function is no longer needed for frontend business API requests with all API bases set.
+
 - Git branch: `codex/spring-migration`
 - Container build: `backend/Dockerfile`
 - Provider-neutral runtime reference: `backend/compose.staging.yaml`
