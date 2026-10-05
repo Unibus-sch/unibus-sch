@@ -65,8 +65,10 @@
 
 ## 현재 상태
 
-새 브랜치 생성과 코드 조사, 화면 폭 정상화까지 진행했습니다.
-공통 셸·화면별 스크롤 통일과 실제 기기 E2E는 다음 단계이며 아직 완료된 것으로 간주하지 않습니다.
+새 브랜치 생성, 화면 폭 정상화, 로그인 헤더 분리, 공통 셸의 메뉴 공간 확보,
+홈·공지·설정·통학·셔틀의 여백 보정과 문의·공지 이미지 모달 계층 분리를 진행했습니다.
+로컬 브라우저 회귀 결과는 `pwa-ui-browser-test.md`에 기록했습니다.
+실제 iOS 설치형 PWA·키보드·안전 영역과 지도·기사 화면 검증은 남아 있습니다.
 
 참고: [MDN viewport](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/viewport),
 [안전 영역 CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/env).

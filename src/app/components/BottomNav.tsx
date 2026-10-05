@@ -75,7 +75,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label={t("주요 화면", "Primary")}
-      className="unibus-bottom-nav absolute inset-x-0 bottom-0 z-50 mx-auto w-full max-w-[430px] border-t border-[var(--unibus-divider)] bg-white/90 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),6px)] shadow-[0_-10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl"
+      className="unibus-bottom-nav relative z-50 mx-auto w-full shrink-0 border-t border-[var(--unibus-divider)] bg-white/90 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),6px)] shadow-[0_-10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl"
     >
       <div className="relative grid grid-cols-5 gap-1">
         {activeIndex >= 0 ? (

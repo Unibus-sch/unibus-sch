@@ -212,7 +212,7 @@ export default function HomeWrapper() {
 
   return (
     <div className="bg-[#f6f6f8] content-stretch flex flex-col items-start relative size-full">
-      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-y-auto overscroll-y-contain bg-white pb-[120px] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] scrollbar-hide [-webkit-overflow-scrolling:touch]">
+      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-y-auto overscroll-y-contain bg-white pb-6 shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] scrollbar-hide [-webkit-overflow-scrolling:touch]">
 
         {/* Header – sticky, no entrance animation */}
         <div className="sticky top-0 z-30 w-full pt-safe">

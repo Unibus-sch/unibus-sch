@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -166,7 +167,7 @@ export default function NoticeWrapper() {
 
   return (
     <div className="bg-[#f6f6f8] content-stretch flex flex-col items-start relative size-full">
-      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-hidden bg-white pb-[120px] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)]">
+      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-hidden bg-white">
         <div className="sticky top-0 z-30 w-full pt-safe">
           <div className="flex w-full items-center justify-between bg-[rgba(255,255,255,0.9)] px-[16px] pb-[12px] pt-[16px] backdrop-blur-[10px]">
             <motion.button
@@ -428,7 +429,7 @@ export default function NoticeWrapper() {
         </div>
       </div>
 
-      <AnimatePresence initial={false}>
+      {createPortal(<AnimatePresence initial={false}>
         {lightboxImage ? (
           <motion.div
             role="dialog"
@@ -438,7 +439,7 @@ export default function NoticeWrapper() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
             onClick={() => setLightboxImage(null)}
           >
             <motion.img
@@ -465,7 +466,7 @@ export default function NoticeWrapper() {
             </motion.button>
           </motion.div>
         ) : null}
-      </AnimatePresence>
+      </AnimatePresence>, document.body)}
     </div>
   );
 }

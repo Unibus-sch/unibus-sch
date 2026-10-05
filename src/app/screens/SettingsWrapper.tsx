@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
@@ -185,7 +186,7 @@ export default function SettingsWrapper() {
 
   return (
     <div className="bg-[#f6f6f8] content-stretch flex flex-col items-start relative size-full">
-      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-y-auto overscroll-y-contain bg-white pb-[120px] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] scrollbar-hide [-webkit-overflow-scrolling:touch]">
+      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-y-auto overscroll-y-contain bg-white pb-6 shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] scrollbar-hide [-webkit-overflow-scrolling:touch]">
         {/* Header */}
         <div className="sticky top-0 z-30 w-full pt-safe">
           <div className="backdrop-blur-[6px] bg-[rgba(255,255,255,0.9)] flex items-center justify-between pb-[12px] pt-[16px] px-[16px] w-full border-b border-[#f1f5f9]">
@@ -577,10 +578,10 @@ export default function SettingsWrapper() {
 
       </div>
 
-      <AnimatePresence initial={false}>
+      {createPortal(<AnimatePresence initial={false}>
         {supportOpen ? (
           <motion.div
-            className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 backdrop-blur-[2px] sm:items-center sm:p-4"
+            className="fixed inset-0 z-[100] flex items-end justify-center bg-black/45 backdrop-blur-[2px] sm:items-center sm:p-4"
             role="dialog"
             aria-modal="true"
             aria-labelledby="support-title"
@@ -636,7 +637,7 @@ export default function SettingsWrapper() {
                       ...current,
                       category: event.target.value as ReportCategory,
                     }))}
-                    className="mt-2 h-12 w-full rounded-lg border border-[#cbd5e1] bg-white px-3 text-sm text-[#0f172a] outline-none transition-[border-color,box-shadow] focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/15"
+                    className="mt-2 h-12 w-full rounded-lg border border-[#cbd5e1] bg-white px-3 text-base text-[#0f172a] outline-none transition-[border-color,box-shadow] focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/15"
                   >
                     <option value="location">{t("버스 위치 표시", "Bus location")}</option>
                     <option value="schedule">{t("노선·시간표", "Route or schedule")}</option>
@@ -655,7 +656,7 @@ export default function SettingsWrapper() {
                     maxLength={160}
                     aria-required="true"
                     placeholder={t("무슨 문제가 생겼나요?", "What happened?")}
-                    className="mt-2 h-12 w-full rounded-lg border border-[#cbd5e1] bg-white px-3 text-sm text-[#0f172a] outline-none transition-[border-color,box-shadow] placeholder:text-[#94a3b8] focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/15"
+                    className="mt-2 h-12 w-full rounded-lg border border-[#cbd5e1] bg-white px-3 text-base text-[#0f172a] outline-none transition-[border-color,box-shadow] placeholder:text-[#94a3b8] focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/15"
                   />
                 </label>
 
@@ -667,7 +668,7 @@ export default function SettingsWrapper() {
                     rows={5}
                     aria-required="true"
                     placeholder={t("발생한 화면과 상황을 적어 주세요.", "Tell us which screen and what you were doing.")}
-                    className="mt-2 w-full resize-none rounded-lg border border-[#cbd5e1] bg-white p-3 text-sm leading-6 text-[#0f172a] outline-none transition-[border-color,box-shadow] placeholder:text-[#94a3b8] focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/15"
+                    className="mt-2 w-full resize-none rounded-lg border border-[#cbd5e1] bg-white p-3 text-base leading-6 text-[#0f172a] outline-none transition-[border-color,box-shadow] placeholder:text-[#94a3b8] focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/15"
                   />
                 </label>
               </div>
@@ -698,7 +699,7 @@ export default function SettingsWrapper() {
             </motion.form>
           </motion.div>
         ) : null}
-      </AnimatePresence>
+      </AnimatePresence>, document.body)}
     </div>
   );
 }

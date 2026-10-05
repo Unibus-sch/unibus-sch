@@ -570,7 +570,7 @@ export default function CampusShuttleWrapper() {
         </div>
 
         <div
-          className="absolute bottom-0 left-0 right-0 z-20 flex flex-col items-start overflow-hidden rounded-t-[24px] bg-white shadow-[0px_-12px_40px_0px_rgba(0,0,0,0.12)]"
+          className="absolute bottom-0 left-0 right-0 z-20 flex max-h-[calc(100%_-_112px_-_env(safe-area-inset-top,0px))] flex-col items-start overflow-hidden rounded-t-[24px] bg-white shadow-[0px_-12px_40px_0px_rgba(0,0,0,0.12)]"
           style={{
             height: sheetExpanded ? "68dvh" : "320px",
             transform: `translateY(${dragY}px)`,
@@ -602,7 +602,7 @@ export default function CampusShuttleWrapper() {
           </button>
 
           <div className="relative min-h-0 w-full flex-1 overflow-auto overscroll-contain">
-            <div className="relative flex w-full flex-col items-start gap-3 px-[22px] pb-[104px]">
+            <div className="relative flex w-full flex-col items-start gap-3 px-[22px] pb-6">
               <div className="content-stretch flex items-center justify-between relative shrink-0 w-full">
                 <div>
                   <p className="font-['Public_Sans'] font-extrabold text-[#1e3a8a] text-[20px] tracking-[-0.4px] leading-[28px]">

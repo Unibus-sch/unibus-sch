@@ -72,9 +72,9 @@ export default function LoginWrapper() {
   };
 
   return (
-    <div className="relative flex size-full flex-col items-start overflow-y-auto overscroll-y-contain bg-gradient-to-b from-white to-[#f6f6f8] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] [-webkit-overflow-scrolling:touch]">
+    <div className="relative flex size-full min-h-0 flex-col items-start overflow-hidden bg-gradient-to-b from-white to-[#f6f6f8] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)]">
       {/* Header */}
-      <div className="bg-white relative shrink-0 w-full">
+      <div data-testid="login-header" className="bg-white relative shrink-0 w-full pt-safe">
         <div className="flex flex-row items-center justify-center size-full">
           <div className="content-stretch flex items-center justify-center pb-[8px] pt-[15px] px-[16px] relative w-full">
             <div className="flex flex-col font-['Public_Sans'] font-bold h-[23px] justify-center leading-[0] relative shrink-0 text-[#0f172a] text-[18px] text-center tracking-[-0.27px]">
@@ -85,7 +85,7 @@ export default function LoginWrapper() {
       </div>
 
       {/* Main Content */}
-      <div className="relative shrink-0 w-full animate-[routeFade_180ms_ease-out]">
+      <div data-testid="login-scroll" className="relative min-h-0 flex-1 w-full overflow-y-auto overscroll-y-contain pb-safe animate-[routeFade_180ms_ease-out] [-webkit-overflow-scrolling:touch]">
         <div className="content-stretch flex flex-col items-start justify-between pb-[32px] pt-[40px] px-[24px] relative w-full">
 
           {/* Logo + Title */}
