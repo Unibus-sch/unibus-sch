@@ -80,8 +80,8 @@ class ApiClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
-    baseUrl = EDGE_API_BASE_URL,
-    includeSupabaseAuthorization = true,
+    baseUrl = PUBLIC_API_BASE_URL,
+    includeSupabaseAuthorization = false,
     includeSessionToken = true,
   ): Promise<T> {
     const headers: Record<string, string> = {
@@ -522,7 +522,7 @@ class ApiClient {
   }
 
   async updateBusLocation(busId: string, location: { lat: number; lng: number; speed?: number; heading?: number }): Promise<void> {
-    const response = await this.request<ApiResponse>(`/buses/${busId}/location`, {
+    const response = await this.driverRequest<ApiResponse>(`/buses/${busId}/location`, {
       method: 'POST',
       body: JSON.stringify(location),
     });
@@ -542,10 +542,10 @@ class ApiClient {
   // ============ USER REPORT ENDPOINTS ============
 
   async createReport(data: { category: ReportCategory; title: string; details: string; relatedBusId?: string; relatedRouteId?: string }): Promise<UserReport> {
-    const response = await this.request<ApiResponse<UserReport>>('/reports', {
+    const response = await this.authRequest<ApiResponse<UserReport>>('/reports', {
       method: 'POST',
       body: JSON.stringify(data),
-    });
+    }, true);
     if (response.success && response.data) return response.data;
     throw new Error(response.error || 'Failed to create report');
   }
@@ -649,7 +649,7 @@ class ApiClient {
   // ============ CAMPUS ENDPOINTS ============
 
   async getCampusRoutePath(): Promise<{ path: [number, number][]; stops: any[] }> {
-    const response = await this.request<ApiResponse<{ path: [number, number][]; stops: any[] }>>('/campus/path');
+    const response = await this.publicRequest<ApiResponse<{ path: [number, number][]; stops: any[] }>>('/campus/path');
     if (response.success && response.data) return response.data;
     throw new Error(response.error || 'Failed to fetch campus route path');
   }

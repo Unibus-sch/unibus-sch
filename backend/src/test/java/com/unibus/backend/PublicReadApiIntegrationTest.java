@@ -59,6 +59,23 @@ class PublicReadApiIntegrationTest {
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     @Test
+    void campusPathUsesStoredStopsPersistentCacheAndEdgeHeaders() throws Exception {
+        var first = get("/campus/path");
+        assertThat(first.status()).isEqualTo(200);
+        assertThat(first.json().path("data").path("stops").size()).isEqualTo(2);
+        assertThat(first.json().path("data").path("stops").get(0).has("arrivalTime")).isFalse();
+        assertThat(first.json().path("data").path("stops").get(0).path("order").asInt()).isEqualTo(1);
+        assertThat(first.json().path("data").path("path").size()).isEqualTo(40);
+        assertThat(get("/campus/path").json().path("data").path("cached").asBoolean()).isTrue();
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM route_path_cache", Integer.class)).isEqualTo(1);
+        var response = httpClient.send(HttpRequest.newBuilder()
+            .uri(URI.create("http://127.0.0.1:" + port + "/campus/path")).GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(response.headers().firstValue("Cache-Control")).contains("public, max-age=300, stale-while-revalidate=3600");
+        jdbcTemplate.update("UPDATE route_stops SET latitude = latitude + 0.001 WHERE stop_order = 1");
+        assertThat(get("/campus/path").json().path("data").path("cached").asBoolean()).isFalse();
+    }
+
+    @Test
     void noticesMatchEdgeStatusFieldsAndNullNormalization() throws Exception {
         ApiResult list = get("/notices");
         assertThat(list.status()).isEqualTo(200);

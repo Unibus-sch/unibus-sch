@@ -41,5 +41,8 @@ gate, not authorization to switch production traffic.
 
 The frontend keeps separate public, auth, admin, and driver API base URLs. Rollback changes those
 values back to the Supabase Edge Function and redeploys the frontend; PostgreSQL, Realtime, and
-Storage remain in place. The three intentionally non-migrated endpoints (`GET /campus/path`,
-`POST /reports`, and legacy `POST /buses/{id}/location`) continue to use Edge throughout.
+Storage remain in place. `GET /campus/path`, `POST /reports`, and legacy
+`POST /buses/{id}/location` now use the public, auth, and driver Spring API groups respectively.
+Edge fallback is retained only when a group base URL is absent; validated staging builds require
+all four base URLs. Rolling back to Edge requires an explicitly deployed compatible Edge Function.
+The staging project currently reported as missing `make-server` is not an available rollback target.

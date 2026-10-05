@@ -10,9 +10,13 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:env": "node --test scripts/validate-env.test.mjs",
+    "test:api-routing": "node --test scripts/api-routing.test.mjs",
+    "test:staging-fixtures": "node --test scripts/staging-notice-image.test.mjs",
+    "prepare:staging-image": "node scripts/staging-notice-image.mjs",
     "test:staging-smoke": "node --test scripts/staging-smoke.test.mjs",
     "verify:env": "node scripts/validate-env.mjs",
     "verify:parity": "node scripts/verify-edge-spring-parity.mjs",
+    "verify:campus-contract": "node scripts/verify-campus-edge-contract.mjs",
     "verify:staging": "node scripts/verify-staging-smoke.mjs",
     "verify:integrations": "node scripts/verify-supabase-integrations.mjs",
     "preview": "vite preview"

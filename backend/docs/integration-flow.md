@@ -35,8 +35,8 @@ focused tests and must not be used as a deployment workaround.
 - `APP_CORS_ALLOWED_ORIGIN_PATTERNS` contains only scoped preview-host patterns.
 - Origins never contain a path or trailing slash.
 - Unknown origins fail the preflight request; wildcard `*` is not used with authenticated APIs.
-- The Supabase Edge `ALLOWED_ORIGINS` secret remains separate while the three non-migrated
-  endpoints continue to run on Edge.
+- All frontend business API calls now use their configured Spring group. Supabase Edge
+  `ALLOWED_ORIGINS` is relevant only for an explicitly selected legacy rollback deployment.
 
 ## Web Push boundary
 

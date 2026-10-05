@@ -52,3 +52,12 @@ tasks.withType<Test>().configureEach {
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-Xlint:deprecation")
 }
+
+tasks.register<JavaExec>("prepareStagingFixtures") {
+    notCompatibleWithConfigurationCache("Operator secret environment must not be persisted in the configuration cache")
+    group = "verification"
+    description = "Explicit staging-only fixture CLI; defaults to preparation without database writes"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass = "com.unibus.backend.staging.StagingFixtures"
+    jvmArgs("-Djava.awt.headless=true")
+}

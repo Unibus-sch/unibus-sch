@@ -87,6 +87,13 @@ await request(edgeUrl, `/routes/${routeId}/path`, {}, true);
 await request(springUrl, `/routes/${routeId}/path`);
 await compare("route path", `/routes/${routeId}/path`);
 
+await request(edgeUrl, "/campus/path", {}, true);
+await request(springUrl, "/campus/path");
+await compare("campus path", "/campus/path");
+await compare("report token missing", "/reports", { method: "POST", body: {} });
+await compare("report token invalid", "/reports", { method: "POST", body: {}, token: "invalid-parity-token" });
+await compare("legacy GPS token missing", `/buses/${encodeURIComponent(busId)}/location`, { method: "POST", body: {} });
+
 await compare("bus detail", `/buses/${encodeURIComponent(busId)}`);
 await compare("latest bus locations", "/buses/locations/latest");
 await compare("missing notice", "/notices/not-a-uuid");

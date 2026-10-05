@@ -31,7 +31,8 @@ public class DriverAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return !("/driver".equals(path) || path.startsWith("/driver/"));
+        return !("/driver".equals(path) || path.startsWith("/driver/")
+            || ("POST".equals(request.getMethod()) && path.matches("^/buses/[^/]+/location/?$")));
     }
 
     @Override

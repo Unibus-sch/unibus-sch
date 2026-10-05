@@ -39,6 +39,16 @@ class RouteRepository {
         ).stream().map(this::withDetails).toList();
     }
 
+    Optional<UUID> findCampusRouteId() {
+        List<UUID> fixed = jdbcTemplate.query(
+            "SELECT id FROM routes WHERE id = '00000000-0000-0000-0000-000000000001'",
+            (rs, row) -> rs.getObject("id", UUID.class));
+        if (!fixed.isEmpty()) return fixed.stream().findFirst();
+        return jdbcTemplate.query(
+            "SELECT id FROM routes WHERE type = 'shuttle' AND name ILIKE '%학내순환%' ORDER BY id LIMIT 1",
+            (rs, row) -> rs.getObject("id", UUID.class)).stream().findFirst();
+    }
+
     Optional<RouteResponse> findById(UUID id) {
         return jdbcTemplate.query(
             SELECT_ROUTE + " WHERE id = ?",

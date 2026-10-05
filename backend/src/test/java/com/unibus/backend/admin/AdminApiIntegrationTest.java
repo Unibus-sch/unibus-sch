@@ -335,6 +335,31 @@ class AdminApiIntegrationTest {
         catch (Exception error) { throw new AssertionError(error); }
     }
 
+    @Test
+    void userReportCreationPreservesAuthValidationPlaceholderFieldsAndQuota() throws Exception {
+        assertThat(request("POST", "/reports", "{}", null).status()).isEqualTo(401);
+        assertThat(request("POST", "/reports", "{}", USER_TOKEN).status()).isEqualTo(400);
+        assertThat(request("POST", "/reports", "{\"title\":\"T\",\"details\":\"D\",\"relatedRouteId\":\"invalid\"}", USER_TOKEN).status()).isEqualTo(400);
+        var created = request("POST", "/reports", "{\"title\":\"  문의  \",\"details\":\"  내용  \"}", USER_TOKEN);
+        assertThat(created.status()).isEqualTo(200);
+        assertThat(created.json().path("data").path("title").stringValue()).isEqualTo("문의");
+        assertThat(created.json().path("data").path("category").stringValue()).isEqualTo("other");
+        assertThat(created.json().path("data").path("userName").stringValue()).isEqualTo("알 수 없음");
+        assertThat(created.json().path("data").path("userEmail").stringValue()).isEmpty();
+        assertThat(created.json().path("data").path("relatedRouteId").isNull()).isTrue();
+        for (int index = 0; index < 2; index++) {
+            assertThat(request("POST", "/reports", "{\"title\":\"T\",\"details\":\"D\"}", USER_TOKEN).status()).isEqualTo(200);
+        }
+        assertThat(request("POST", "/reports", "{\"title\":\"T\",\"details\":\"D\"}", USER_TOKEN).status()).isEqualTo(429);
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM user_reports", Integer.class)).isEqualTo(4);
+    }
+
+    @Test
+    void malformedOrNullReportJsonKeepsEdgesServerErrorEnvelope() throws Exception {
+        assertApiError(request("POST", "/reports", "{", ADMIN_TOKEN), 500, "문의 접수에 실패했습니다");
+        assertApiError(request("POST", "/reports", "null", ADMIN_TOKEN), 500, "문의 접수에 실패했습니다");
+    }
+
     private static HttpServer startStorageServer() {
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);

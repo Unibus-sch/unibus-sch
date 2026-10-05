@@ -14,6 +14,10 @@ frontend only changes its public API base URL.
 | `GET /buses` | `200` | n/a | `data: []`; absent route/trip/location/timestamp stay `null` |
 | `GET /buses/{id}` | `200` | `404`, `Bus not found` | absent route/location stay `null` |
 | `GET /buses/locations/latest` | `200` | n/a | `data: []` |
+| `GET /campus/path` | `200` | n/a | `data: {path, stops, cached}`; DB-backed markers or five fallback stops, coordinates `[lng,lat]` |
+
+Campus generation/cache/rate-limit rules and staging preparation are detailed in
+[`remaining-edge-and-staging-e2e.md`](remaining-edge-and-staging-e2e.md).
 
 All successful responses use `{ "success": true, "data": ... }`. Errors use
 `{ "success": false, "error": "..." }`. Database failures retain the

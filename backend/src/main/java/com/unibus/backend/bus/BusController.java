@@ -3,6 +3,7 @@ package com.unibus.backend.bus;
 import com.unibus.backend.common.api.ApiResponse;
 import com.unibus.backend.common.api.ApiRequestException;
 import com.unibus.backend.auth.AdminRequest;
+import com.unibus.backend.auth.DriverRequest;
 import com.unibus.backend.auth.SessionAuthenticator;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/buses")
@@ -27,15 +29,37 @@ public class BusController {
     private final BusService busService;
     private final BusAdminService busAdminService;
     private final SessionAuthenticator sessionAuthenticator;
+    private final LegacyBusLocationService locationService;
+    private final ObjectMapper mapper;
 
     public BusController(
         BusService busService,
         BusAdminService busAdminService,
-        SessionAuthenticator sessionAuthenticator
+        SessionAuthenticator sessionAuthenticator,
+        LegacyBusLocationService locationService,
+        ObjectMapper mapper
     ) {
         this.busService = busService;
         this.busAdminService = busAdminService;
         this.sessionAuthenticator = sessionAuthenticator;
+        this.locationService = locationService;
+        this.mapper = mapper;
+    }
+
+    @PostMapping("/{id}/location")
+    ResponseEntity<?> updateLocation(@PathVariable String id, @RequestBody(required = false) String rawBody,
+                                    HttpServletRequest request) {
+        try {
+            var user = DriverRequest.user(request);
+            JsonNode body = mapper.readTree(rawBody);
+            if (body == null || body.isNull()) throw new IllegalArgumentException("Missing location JSON object");
+            return ResponseEntity.ok(ApiResponse.success(locationService.update(id, body, user.id(), user.role())));
+        } catch (ApiRequestException error) {
+            return ResponseEntity.status(error.status()).body(ApiResponse.error(error.getMessage()));
+        } catch (RuntimeException error) {
+            log.error("Legacy bus location update failed");
+            return ResponseEntity.internalServerError().body(ApiResponse.error("Failed to update location"));
+        }
     }
 
     @GetMapping
