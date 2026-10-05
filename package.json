@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:env": "node --test scripts/validate-env.test.mjs",
+    "test:mobile-viewport": "node --test scripts/mobile-viewport.test.mjs",
     "test:api-routing": "node --test scripts/api-routing.test.mjs",
     "test:staging-fixtures": "node --test scripts/staging-notice-image.test.mjs",
     "prepare:staging-image": "node scripts/staging-notice-image.mjs",
