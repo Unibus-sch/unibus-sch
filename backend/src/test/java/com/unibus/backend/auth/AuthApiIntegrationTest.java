@@ -14,6 +14,8 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -277,6 +279,34 @@ class AuthApiIntegrationTest {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"missing-fields", "null-fields", "missing-account", "blank-email"})
+    void kakaoLoginAllowsAbsentOptionalFieldsAndPersistsCompatibleSession(String variant) throws Exception {
+        String request = "{\"accessToken\":\"optional-fields-local-test-" + variant + "\"}";
+        ApiResult login = post("/auth/kakao", request, null);
+
+        assertThat(login.status()).isEqualTo(200);
+        assertThat(login.json().path("success").asBoolean()).isTrue();
+        JsonNode user = login.json().path("user");
+        assertThat(user.path("email").asString()).isEqualTo("kakao_123456789@kakao.local");
+        assertThat(user.path("name").asString()).isEqualTo(
+            variant.equals("missing-account") ? "Kakao User" : "선택 필드 테스트");
+        assertThat(user.path("profileImage").isNull()).isTrue();
+        String token = login.json().path("token").asString();
+        assertThat(token).isNotBlank();
+        assertThat(jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM auth_tokens WHERE token = ?", Integer.class, tokenCodec.hash(token)
+        )).isEqualTo(1);
+        ApiResult repeatedLogin = post("/auth/kakao", request, null);
+        assertThat(repeatedLogin.status()).isEqualTo(200);
+        assertThat(repeatedLogin.json().path("user").path("id").asString())
+            .isEqualTo(user.path("id").asString());
+        assertThat(jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM users WHERE provider = 'kakao' AND provider_id = '123456789'",
+            Integer.class
+        )).isEqualTo(1);
+    }
+
     private ApiResult post(String path, String body, String authToken) throws Exception {
         HttpRequest.Builder request = HttpRequest.newBuilder()
             .uri(URI.create("http://127.0.0.1:" + port + path))
@@ -308,6 +338,30 @@ class AuthApiIntegrationTest {
 
     private static void handleKakaoProfile(HttpExchange exchange) throws IOException {
         String authorization = exchange.getRequestHeaders().getFirst("Authorization");
+        if (authorization != null && authorization.startsWith("Bearer optional-fields-local-test-")) {
+            String variant = authorization.substring("Bearer optional-fields-local-test-".length());
+            String body = switch (variant) {
+                case "missing-fields" -> """
+                    {"id":123456789,"kakao_account":{"profile":{"nickname":"선택 필드 테스트"}}}
+                    """;
+                case "null-fields" -> """
+                    {"id":123456789,"kakao_account":{"email":null,
+                     "profile":{"nickname":"선택 필드 테스트","profile_image_url":null}}}
+                    """;
+                case "missing-account" -> "{\"id\":123456789}";
+                case "blank-email" -> """
+                    {"id":123456789,"kakao_account":{"email":"  ",
+                     "profile":{"nickname":"선택 필드 테스트"}}}
+                    """;
+                default -> throw new IllegalArgumentException("Unknown local test variant");
+            };
+            byte[] response = body.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, response.length);
+            exchange.getResponseBody().write(response);
+            exchange.close();
+            return;
+        }
         if (("Bearer " + PROFILELESS_KAKAO_TOKEN).equals(authorization)) {
             byte[] response = "{\"kakao_account\":{}}".getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", "application/json");
