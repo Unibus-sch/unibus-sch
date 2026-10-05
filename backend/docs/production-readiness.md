@@ -3,6 +3,11 @@
 This document describes pre-cutover checks only. It does not authorize an AWS deployment,
 production Supabase write, schema change, or traffic switch.
 
+운영 전환의 최신 담당자별 준비·배포·롤백 절차는 한국어 문서
+[`production-cutover.md`](production-cutover.md)를 우선 따릅니다.
+스테이징 최종 확인 근거와 검증 범위는 [`staging-final-verification.md`](staging-final-verification.md)에 있습니다.
+전체 재테스트는 사용자의 결정에 따라 이번 준비 작업에서 수행하지 않습니다.
+
 ## Required configuration
 
 Frontend build variables:
@@ -25,11 +30,13 @@ variable. Deployment logs and test reports must not print their values.
 ## Mandatory order
 
 1. Back up and inspect the target Supabase project.
-2. Apply reviewed Supabase migrations through
-   `20260918000000_integrate_realtime_storage_push.sql` using the normal migration process.
+2. Compare the actual production schema and migration history read-only. Separately review and
+   approve only necessary, backward-compatible differences, including the integration contracts in
+   `20260918000000_integrate_realtime_storage_push.sql`. Never bulk-apply repository migrations:
+   they also include seed, data backfill, credential rotation, and demo removal operations.
 3. Start Spring with schema validation enabled and require a successful health check.
-4. Run Gradle, frontend environment/type/build tests, Docker build, isolated parity, integration,
-   and browser E2E checks.
+4. Review existing Gradle, frontend, Docker, isolated parity/integration and browser evidence.
+   Record unverified scope explicitly; any further test run requires a separate decision.
 5. Deploy to a staging origin and verify exact/preview CORS plus an unknown-origin rejection.
 6. Obtain explicit approval before changing any production frontend API base URL.
 

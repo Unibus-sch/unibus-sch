@@ -97,6 +97,10 @@ For the teammate provisioning AWS, use [`docs/aws-handoff.md`](docs/aws-handoff.
 the runtime contract, secret-name mapping, Supabase migration checks, image digest handoff, and
 post-deploy acceptance checklist without any real account IDs, ARNs, endpoints, or credentials.
 
+운영 전환 준비는 [`docs/production-cutover.md`](docs/production-cutover.md)를 따릅니다.
+운영 대상 확정, 백업, 담당자별 설정, 배포 순서, 중단 기준과 롤백을 정리한 준비 문서이며
+실제 운영 변경은 별도 명시적 승인이 필요합니다.
+
 ## Migration safety boundaries
 
 - Only health and the documented public GET endpoints are public.
