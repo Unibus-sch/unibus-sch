@@ -2,26 +2,26 @@
 
 :root {
   --font-size: 16px;
-  --unibus-brand: #1e3a8a;
+  --unibus-brand: #243b70;
   --unibus-brand-foreground: #ffffff;
-  --unibus-brand-soft: #eef3ff;
-  --unibus-brand-border: #dce6f7;
+  --unibus-brand-soft: #edf1f8;
+  --unibus-brand-border: #d5deee;
   --unibus-surface: #ffffff;
-  --unibus-surface-subtle: #f8fafc;
-  --unibus-text-strong: #0f172a;
-  --unibus-text-muted: #64748b;
-  --unibus-divider: #e2e8f0;
-  --unibus-focus: rgb(30 58 138 / 0.45);
-  --unibus-shadow-soft: 0 8px 24px rgb(30 58 138 / 0.1);
+  --unibus-surface-subtle: #f5f6f8;
+  --unibus-text-strong: #18202e;
+  --unibus-text-muted: #606b7b;
+  --unibus-divider: #e4e7ed;
+  --unibus-focus: rgb(36 59 112 / 0.5);
+  --unibus-shadow-soft: 0 4px 16px rgb(24 32 46 / 0.06);
   --unibus-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
+  --background: #f7f8fa;
+  --foreground: var(--unibus-text-strong);
+  --card: var(--unibus-surface);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
+  --primary: var(--unibus-brand);
+  --primary-foreground: var(--unibus-brand-foreground);
   --secondary: oklch(0.95 0.0058 264.53);
   --secondary-foreground: #030213;
   --muted: #ececf0;
@@ -54,25 +54,25 @@
 }
 
 .dark {
-  --unibus-brand: #78a9d4;
-  --unibus-brand-foreground: #102a43;
-  --unibus-brand-soft: #172554;
-  --unibus-brand-border: #334b78;
-  --unibus-surface: #1c1c1e;
-  --unibus-surface-subtle: #2c2c2e;
-  --unibus-text-strong: #f8fafc;
-  --unibus-text-muted: #aeaeb2;
-  --unibus-divider: rgb(84 84 88 / 0.65);
-  --unibus-focus: rgb(120 169 212 / 0.55);
-  --unibus-shadow-soft: 0 8px 24px rgb(0 0 0 / 0.28);
-  --background: #000000;
-  --foreground: #ffffff;
-  --card: #1c1c1e;
+  --unibus-brand: #c0cfee;
+  --unibus-brand-foreground: #17233d;
+  --unibus-brand-soft: #293348;
+  --unibus-brand-border: #44516b;
+  --unibus-surface: #1c1f25;
+  --unibus-surface-subtle: #252932;
+  --unibus-text-strong: #edf0f5;
+  --unibus-text-muted: #acb5c3;
+  --unibus-divider: #343a45;
+  --unibus-focus: rgb(192 207 238 / 0.65);
+  --unibus-shadow-soft: 0 4px 16px rgb(0 0 0 / 0.18);
+  --background: #15171b;
+  --foreground: var(--unibus-text-strong);
+  --card: var(--unibus-surface);
   --card-foreground: #ffffff;
   --popover: #2c2c2e;
   --popover-foreground: #ffffff;
-  --primary: #78a9d4;
-  --primary-foreground: #102a43;
+  --primary: var(--unibus-brand);
+  --primary-foreground: var(--unibus-brand-foreground);
   --secondary: #2c2c2e;
   --secondary-foreground: #ffffff;
   --muted: #2c2c2e;
@@ -106,6 +106,7 @@
 @theme inline {
   --color-unibus-brand: var(--unibus-brand);
   --color-unibus-brand-foreground: var(--unibus-brand-foreground);
+  --color-unibus-brand-border: var(--unibus-brand-border);
   --color-unibus-brand-soft: var(--unibus-brand-soft);
   --color-unibus-surface: var(--unibus-surface);
   --color-unibus-surface-subtle: var(--unibus-surface-subtle);

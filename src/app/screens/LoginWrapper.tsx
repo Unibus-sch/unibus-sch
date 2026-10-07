@@ -72,12 +72,12 @@ export default function LoginWrapper() {
   };
 
   return (
-    <div className="relative flex size-full flex-col items-start overflow-y-auto overscroll-y-contain bg-gradient-to-b from-white to-[#f6f6f8] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] [-webkit-overflow-scrolling:touch]">
+    <div className="font-['Public_Sans'] relative flex size-full min-h-0 flex-col items-start overflow-hidden bg-unibus-surface">
       {/* Header */}
-      <div className="bg-white relative shrink-0 w-full">
+      <div data-testid="login-header" className="bg-unibus-surface relative shrink-0 w-full pt-safe">
         <div className="flex flex-row items-center justify-center size-full">
           <div className="content-stretch flex items-center justify-center pb-[8px] pt-[15px] px-[16px] relative w-full">
-            <div className="flex flex-col font-['Public_Sans'] font-bold h-[23px] justify-center leading-[0] relative shrink-0 text-[#0f172a] text-[18px] text-center tracking-[-0.27px]">
+            <div className="flex flex-col font-semibold h-[23px] justify-center leading-[0] relative shrink-0 text-unibus-text text-[18px] text-center tracking-[-0.27px]">
               <p className="leading-[22.5px]">{t("로그인", "Login")}</p>
             </div>
           </div>
@@ -85,32 +85,30 @@ export default function LoginWrapper() {
       </div>
 
       {/* Main Content */}
-      <div className="relative shrink-0 w-full animate-[routeFade_180ms_ease-out]">
-        <div className="content-stretch flex flex-col items-start justify-between pb-[32px] pt-[40px] px-[24px] relative w-full">
+      <div data-testid="login-scroll" className="relative min-h-0 flex-1 w-full overflow-y-auto overscroll-y-contain pb-safe animate-[routeFade_180ms_ease-out] [-webkit-overflow-scrolling:touch]">
+        <div className="content-stretch flex flex-col items-start justify-between pb-[32px] pt-[28px] px-[24px] relative w-full">
 
           {/* Logo + Title */}
-          <div className="onboard-reveal content-stretch flex flex-col items-start pb-[40px] relative shrink-0 w-full">
+          <div className="onboard-reveal content-stretch flex flex-col items-start pb-[28px] relative shrink-0 w-full">
             <div className="relative shrink-0 w-full">
               <div className="content-stretch flex gap-[8px] items-center mb-4">
-                <div className="bg-[#1e3b8a] content-stretch flex items-center justify-center relative rounded-[8px] shrink-0 size-[40px]">
+                <div className="bg-unibus-brand content-stretch flex items-center justify-center relative rounded-[12px] shrink-0 size-[40px]">
                   <div className="h-[19px] relative shrink-0 w-[16px]">
                     <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 19">
-                      <path d={svgPaths.pdce8f20} fill="white" />
+                      <path d={svgPaths.pdce8f20} fill="var(--unibus-brand-foreground)" />
                     </svg>
                   </div>
                 </div>
-                <div className="flex flex-col font-['Public_Sans'] font-bold justify-center leading-[0] relative shrink-0 text-[#1e3b8a] text-[20px] tracking-[-0.5px]">
+                <div className="flex flex-col font-semibold justify-center leading-[0] relative shrink-0 text-unibus-brand text-[20px] tracking-[-0.5px]">
                   <p className="leading-[28px]">UNIBUS SCH</p>
                 </div>
               </div>
               <div className="mb-2">
-                <div className="flex flex-col font-['Public_Sans'] font-bold justify-center leading-[0] relative shrink-0 text-[#0f172a] text-[28px] tracking-[-0.7px]">
-                  <p className="leading-[35px]">{t("다시 오신 것을 환영합니다", "Welcome back")}</p>
+                <div className="flex flex-col font-semibold justify-center leading-[0] relative shrink-0 text-unibus-text text-[26px] tracking-[-0.7px]">
+                  <p className="leading-[35px]">{t("다시 만나 반가워요", "Welcome back")}</p>
                 </div>
               </div>
-              <div className="flex flex-col font-['Public_Sans'] font-normal justify-center leading-[0] relative shrink-0 text-[#64748b] text-[16px]">
-                <p className="leading-[24px]">{t("순천향대학교 셔틀버스 계정으로 로그인하세요", "Log in to your SCH University shuttle account")}</p>
-              </div>
+
             </div>
           </div>
 
@@ -126,7 +124,7 @@ export default function LoginWrapper() {
             {/* Email */}
             <div className="onboard-reveal content-stretch flex flex-col items-start relative shrink-0 w-full [animation-delay:80ms]">
               <div className="content-stretch flex flex-col items-start pb-[8px] relative shrink-0 w-full">
-                <div className="flex flex-col font-['Public_Sans'] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#0f172a] text-[14px] w-full">
+                <div className="flex flex-col font-semibold justify-center leading-[0] not-italic relative shrink-0 text-unibus-text text-[14px] w-full">
                   <p className="leading-[21px]">{t("이메일", "Email")}</p>
                 </div>
               </div>
@@ -137,7 +135,7 @@ export default function LoginWrapper() {
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder={t("이메일을 입력하세요", "Enter your email")}
-                  className="w-full h-[56px] px-4 bg-white border border-[#cbd5e1] rounded-[8px] font-['Public_Sans'] text-[16px] text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#1e3b8a] focus:ring-2 focus:ring-[#1e3b8a]/20 transition-all"
+                  className="w-full h-[52px] px-4 bg-unibus-surface border border-unibus-divider rounded-[12px] text-[16px] text-unibus-text placeholder:text-unibus-muted focus:outline-none focus:border-unibus-brand focus:ring-2 focus:ring-unibus-brand/20 transition-all"
                 />
               </div>
             </div>
@@ -145,10 +143,10 @@ export default function LoginWrapper() {
             {/* Password */}
             <div className="onboard-reveal content-stretch flex flex-col items-start relative shrink-0 w-full [animation-delay:120ms]">
               <div className="content-stretch flex items-center justify-between pb-[8px] relative shrink-0 w-full">
-                <div className="flex flex-col font-['Public_Sans'] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#0f172a] text-[14px]">
+                <div className="flex flex-col font-semibold justify-center leading-[0] not-italic relative shrink-0 text-unibus-text text-[14px]">
                   <p className="leading-[21px]">{t("비밀번호", "Password")}</p>
                 </div>
-                <button className="flex flex-col font-['Public_Sans'] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#1e3b8a] text-[12px]">
+                <button className="flex flex-col font-semibold justify-center leading-[0] not-italic relative shrink-0 text-unibus-brand text-[13px]">
                   <p className="leading-[16px]">{t("비밀번호를 잊으셨나요?", "Forgot?")}</p>
                 </button>
               </div>
@@ -159,10 +157,10 @@ export default function LoginWrapper() {
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder={t("비밀번호를 입력하세요", "Enter your password")}
-                  className="w-full h-[56px] px-4 bg-white border border-[#cbd5e1] rounded-[8px] font-['Public_Sans'] text-[16px] text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#1e3b8a] focus:ring-2 focus:ring-[#1e3b8a]/20 transition-all"
+                  className="w-full h-[52px] px-4 bg-unibus-surface border border-unibus-divider rounded-[12px] text-[16px] text-unibus-text placeholder:text-unibus-muted focus:outline-none focus:border-unibus-brand focus:ring-2 focus:ring-unibus-brand/20 transition-all"
                 />
                 <button onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <svg className="w-5 h-5 text-[#94a3b8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5 text-unibus-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     {showPassword ? (
                       // 보일 때 → 일반 눈 모양
                       <>
@@ -180,18 +178,18 @@ export default function LoginWrapper() {
           </div>
 
           {/* Login Button */}
-          <div className="onboard-reveal content-stretch flex flex-col items-start pt-[40px] relative shrink-0 w-full [animation-delay:160ms]">
+          <div className="onboard-reveal content-stretch flex flex-col items-start pt-[28px] relative shrink-0 w-full [animation-delay:160ms]">
             <button
               onClick={handleLogin}
-              className="bg-[#1e3b8a] content-stretch flex gap-[8px] h-[56px] items-center justify-center relative rounded-[12px] shrink-0 w-full shadow-[0px_10px_15px_-3px_rgba(30,59,138,0.2),0px_4px_6px_-4px_rgba(30,59,138,0.2)] hover:bg-[#1e3b8a]/90 transition-colors active:scale-[0.97]"
+              className="bg-unibus-brand content-stretch flex gap-[8px] h-[52px] items-center justify-center relative rounded-[12px] shrink-0 w-full hover:bg-unibus-brand/90 transition-colors active:scale-[0.97]"
             >
-              <div className="flex flex-col font-['Public_Sans'] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white">
+              <div className="flex flex-col font-semibold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-unibus-brand-foreground">
                 <p className="leading-[24px]">{loading ? t("로그인 중...", "Logging in...") : t("로그인", "Login")}</p>
               </div>
               {!loading && (
                 <div className="relative shrink-0 size-[15px]">
                   <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 15 15">
-                    <path d={svgPaths.p2da1f880} fill="white" />
+                    <path d={svgPaths.p2da1f880} fill="var(--unibus-brand-foreground)" />
                   </svg>
                 </div>
               )}
@@ -202,24 +200,24 @@ export default function LoginWrapper() {
           <div className="onboard-reveal content-stretch flex flex-col items-start pt-[32px] relative shrink-0 w-full [animation-delay:200ms]">
             <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
               <div className="content-stretch flex items-center py-[16px] relative shrink-0 w-full">
-                <div className="flex-[1_0_0] h-px min-h-px min-w-px relative border-t border-[#e2e8f0]" />
+                <div className="flex-[1_0_0] h-px min-h-px min-w-px relative border-t border-unibus-divider" />
                 <div className="content-stretch flex flex-col items-start px-[16px] relative shrink-0">
-                  <div className="flex flex-col font-['Public_Sans'] font-medium justify-center leading-[0] relative shrink-0 text-[#94a3b8] text-[12px] tracking-[1.2px] uppercase">
-                    <p className="leading-[16px]">{t("또는 다음으로 계속하기", "Or continue with")}</p>
+                  <div className="flex flex-col font-medium justify-center leading-[0] relative shrink-0 text-unibus-muted text-[13px] tracking-[1.2px] uppercase">
+                    <p className="leading-[16px]">{t("또는", "or")}</p>
                   </div>
                 </div>
-                <div className="flex-[1_0_0] h-px min-h-px min-w-px relative border-t border-[#e2e8f0]" />
+                <div className="flex-[1_0_0] h-px min-h-px min-w-px relative border-t border-unibus-divider" />
               </div>
 
               <button
                 onClick={handleKakaoLogin}
                 disabled={loading}
-                className="bg-[#FEE500] flex gap-[8px] h-[56px] items-center justify-center w-full rounded-[12px] hover:bg-[#FDD835] transition-colors disabled:opacity-50 shadow-[0px_4px_12px_-2px_rgba(254,229,0,0.4)] active:scale-[0.96]"
+                className="bg-[#FEE500] flex gap-[8px] h-[52px] items-center justify-center w-full rounded-[12px] hover:bg-[#FDD835] transition-colors disabled:opacity-50 active:scale-[0.96]"
               >
                 <svg className="w-[20px] h-[20px]" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 0C4.02944 0 0 3.35942 0 7.50208C0 9.97392 1.43686 12.1633 3.64018 13.4946L2.71277 17.2161C2.64485 17.4831 2.93553 17.6989 3.16895 17.5449L7.48731 14.7652C7.98476 14.8471 8.48895 14.8947 9 14.8947C13.9706 14.8947 18 11.5353 18 7.50208C18 3.35942 13.9706 0 9 0Z" fill="#381E1F"/>
                 </svg>
-                <div className="font-['Public_Sans'] font-bold text-[16px] text-[#381E1F]">
+                <div className="font-semibold text-[16px] text-[#381E1F]">
                   {t("카카오로 로그인", "Continue with Kakao")}
                 </div>
               </button>
@@ -227,14 +225,14 @@ export default function LoginWrapper() {
           </div>
 
           {/* Sign Up Link */}
-          <div className="onboard-reveal content-stretch flex flex-col items-start pt-[40px] relative shrink-0 w-full [animation-delay:240ms]">
+          <div className="onboard-reveal content-stretch flex flex-col items-start pt-[28px] relative shrink-0 w-full [animation-delay:240ms]">
             <div className="content-stretch flex gap-[4px] items-center justify-center relative w-full">
-              <div className="flex flex-col font-['Public_Sans'] font-normal justify-center leading-[0] relative shrink-0 text-[#475569] text-[14px] text-center">
+              <div className="flex flex-col font-normal justify-center leading-[0] relative shrink-0 text-unibus-muted text-[14px] text-center">
                 <p className="leading-[20px]">{t("계정이 없으신가요?", "Don't have an account?")}</p>
               </div>
               <button
                 onClick={() => navigate("/signup")}
-                className="flex flex-col font-['Public_Sans'] font-bold justify-center leading-[0] relative shrink-0 text-[#0f172a] text-[14px] text-center hover:text-[#1e3b8a] transition-colors"
+                className="flex flex-col font-semibold justify-center leading-[0] relative shrink-0 text-unibus-text text-[14px] text-center hover:text-unibus-brand transition-colors"
               >
                 <p className="leading-[20px]">{t("회원가입", "Sign Up")}</p>
               </button>

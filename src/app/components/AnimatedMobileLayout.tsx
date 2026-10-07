@@ -62,11 +62,11 @@ export function AnimatedMobileLayout() {
       }`}
     >
       <div
-        className={`relative h-full w-full max-w-none overflow-hidden transition-colors duration-200 motion-reduce:transition-none md:h-[844px] md:max-h-full md:max-w-[430px] md:rounded-2xl md:shadow-2xl ${
+        className={`relative flex h-full min-h-0 w-full max-w-none flex-col overflow-hidden transition-colors duration-200 motion-reduce:transition-none md:h-[844px] md:max-h-full md:max-w-[430px] md:rounded-2xl md:shadow-2xl ${
           isSplash ? "bg-[#1e3a8a]" : "bg-background"
         }`}
       >
-        <div key={location.pathname} className={`absolute inset-0 size-full ${transitionClass}`}>
+        <div key={location.pathname} data-testid="app-content" className={`relative min-h-0 w-full flex-1 overflow-hidden ${transitionClass}`}>
           <Suspense fallback={<RouteLoadingFallback isAuthRoute={AUTH_ROUTES.has(location.pathname)} />}>
             <Outlet />
           </Suspense>
