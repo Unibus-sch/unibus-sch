@@ -28,7 +28,7 @@ const CAMPUS_VIEWPORT_POINTS = [
 const CAMPUS_FIT_BOUNDS_OPTIONS = {
   top: 140,
   right: 44,
-  bottom: 344,
+  bottom: 214,
   left: 44,
   maxZoom: 17,
   zoomOffset: 1,
@@ -501,8 +501,8 @@ export default function CampusShuttleWrapper() {
     setDragY(0);
   };
   return (
-    <div className="bg-[#f6f6f8] content-stretch flex flex-col items-center relative size-full">
-      <div className="relative h-full w-full max-w-[430px] shrink-0 overflow-hidden bg-[#f6f6f8] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)]">
+    <div className="bg-background content-stretch flex flex-col items-center relative size-full">
+      <div className="relative h-full w-full max-w-[430px] shrink-0 overflow-hidden bg-background">
         <div className="absolute inset-0 h-full w-full">
           <NaverMapComponent
             center={mapCenter}
@@ -522,7 +522,7 @@ export default function CampusShuttleWrapper() {
         </div>
 
         <div className="absolute left-0 right-0 top-0 z-20 pt-safe">
-          <div className="mx-4 mt-4 rounded-[20px] bg-white/95 backdrop-blur-md border border-white shadow-[0_8px_24px_rgba(15,23,42,0.12)] p-2">
+          <div className="mx-4 mt-4 rounded-[20px] bg-unibus-surface/95 backdrop-blur-md border border-white p-2">
             <div
               role="group"
               aria-label="셔틀 운행 모드"
@@ -549,16 +549,16 @@ export default function CampusShuttleWrapper() {
                   whileHover={reduceMotion ? undefined : { y: -1 }}
                   whileTap={reduceMotion ? undefined : { scale: 0.97 }}
                   transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                  className={`relative isolate h-10 overflow-hidden rounded-[14px] font-['Public_Sans'] text-[13px] font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2 ${
+                  className={`font-['Public_Sans'] relative isolate h-10 overflow-hidden rounded-[14px] text-[13px] font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 ${
                     mode === item.key
-                      ? "text-white"
-                      : "text-[#64748b] hover:bg-[#f1f5f9]"
+                      ? "text-unibus-brand-foreground"
+                      : "text-unibus-muted hover:bg-unibus-surface-subtle"
                   }`}
                 >
                   {mode === item.key ? (
                     <motion.span
                       layoutId="campus-shuttle-mode-indicator"
-                      className="absolute inset-0 -z-10 rounded-[14px] bg-[#1e3a8a] shadow-[0_6px_16px_rgba(30,58,138,0.22)]"
+                      className="absolute inset-0 -z-10 rounded-[14px] bg-unibus-brand"
                       transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 430, damping: 34 }}
                     />
                   ) : null}
@@ -570,9 +570,9 @@ export default function CampusShuttleWrapper() {
         </div>
 
         <div
-          className="absolute bottom-0 left-0 right-0 z-20 flex max-h-[calc(100%_-_112px_-_env(safe-area-inset-top,0px))] flex-col items-start overflow-hidden rounded-t-[24px] bg-white shadow-[0px_-12px_40px_0px_rgba(0,0,0,0.12)]"
+          className="absolute bottom-0 left-0 right-0 z-20 flex max-h-[calc(100%_-_112px_-_env(safe-area-inset-top,0px))] flex-col items-start overflow-hidden rounded-t-[24px] bg-unibus-surface"
           style={{
-            height: sheetExpanded ? "68dvh" : "320px",
+            height: sheetExpanded ? "68dvh" : mode === "station" ? "240px" : "190px",
             transform: `translateY(${dragY}px)`,
             transition: reduceMotion
               ? "none"
@@ -585,7 +585,7 @@ export default function CampusShuttleWrapper() {
             type="button"
             aria-label={sheetExpanded ? "안내 접기" : "상세 안내 펼치기"}
             aria-expanded={sheetExpanded}
-            className="relative flex h-8 w-full shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1e3a8a]"
+            className="relative flex h-8 w-full shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-unibus-brand"
             onClick={() => {
               if (didDragSheet.current) {
                 didDragSheet.current = false;
@@ -598,29 +598,29 @@ export default function CampusShuttleWrapper() {
             onPointerUp={handleDragEnd}
             onPointerCancel={handleDragEnd}
           >
-            <div className="h-1 w-10 shrink-0 rounded-full bg-[rgba(30,58,138,0.24)]" />
+            <div className="h-1 w-10 shrink-0 rounded-full bg-unibus-divider" />
           </button>
 
-          <div className="relative min-h-0 w-full flex-1 overflow-auto overscroll-contain">
+          <div className="font-['Public_Sans'] relative min-h-0 w-full flex-1 overflow-auto overscroll-contain">
             <div className="relative flex w-full flex-col items-start gap-3 px-[22px] pb-6">
               <div className="content-stretch flex items-center justify-between relative shrink-0 w-full">
                 <div>
-                  <p className="font-['Public_Sans'] font-extrabold text-[#1e3a8a] text-[20px] tracking-[-0.4px] leading-[28px]">
+                  <p className="font-semibold text-unibus-brand text-[20px] tracking-[-0.4px] leading-[28px]">
                     {mode === "station" ? "신창역 셔틀" : "학내순환"}
                   </p>
-                  <p className="font-['Public_Sans'] text-[rgba(30,58,138,0.65)] text-[12px] leading-[18px]">
+                  {sheetExpanded ? <p className="text-unibus-muted text-[13px] leading-[20px]">
                     {mode === "station"
                       ? "후문과 신창역을 오가는 셔틀입니다"
                       : campusLoopRoute ? getServiceRuleSummary(campusLoopRoute) : "교내 정류장을 순환하는 셔틀입니다"}
-                  </p>
+                  </p> : null}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => setFitBoundsKey((key) => key + 1)}
-                    className="rounded-full bg-[rgba(30,58,138,0.05)] px-3 py-[7px] transition-all hover:bg-[rgba(30,58,138,0.1)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
+                    className="rounded-full bg-unibus-surface-subtle px-3 py-[7px] transition-all hover:bg-unibus-brand-soft active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
                   >
-                    <span className="font-['Public_Sans'] text-[12px] font-bold leading-4 text-[#1e3a8a]">{t("전체보기", "View All")}</span>
+                    <span className="text-[13px] font-bold leading-4 text-unibus-brand">{t("노선 전체", "Full route")}</span>
                   </button>
                   <button
                     type="button"
@@ -628,7 +628,7 @@ export default function CampusShuttleWrapper() {
                     aria-label={sheetExpanded ? "안내 접기" : "상세 안내 펼치기"}
                     aria-expanded={sheetExpanded}
                     onClick={() => setSheetExpanded((expanded) => !expanded)}
-                    className="grid size-8 place-items-center rounded-lg border border-[rgba(30,58,138,0.18)] bg-white text-[#1e3a8a] transition-colors hover:bg-[rgba(30,58,138,0.05)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2 motion-reduce:transition-none"
+                    className="grid size-8 place-items-center rounded-lg border border-unibus-divider bg-unibus-surface text-unibus-brand transition-colors hover:bg-unibus-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 motion-reduce:transition-none"
                   >
                     {sheetExpanded ? <ChevronDown className="size-4" /> : <ChevronUp className="size-4" />}
                   </button>
@@ -643,7 +643,7 @@ export default function CampusShuttleWrapper() {
                     animate={{ opacity: 1, y: 0, height: "auto" }}
                     exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -4, height: 0 }}
                     transition={reduceMotion ? { duration: 0 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                    className="w-full overflow-hidden rounded-[14px] bg-[#1e3a8a] px-4 py-3 text-[12px] font-semibold text-white"
+                    className="w-full overflow-hidden rounded-[14px] bg-unibus-brand px-4 py-3 text-[13px] font-semibold text-unibus-brand-foreground"
                   >
                     {locationError}
                   </motion.div>
@@ -657,32 +657,32 @@ export default function CampusShuttleWrapper() {
                     initial={reduceMotion ? false : { opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={reduceMotion ? { duration: 0 } : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                    className="overflow-hidden rounded-lg bg-[#1e3a8a] text-white shadow-[0_12px_30px_rgba(30,58,138,0.2)]"
+                    className="overflow-hidden rounded-xl bg-unibus-brand-soft text-unibus-text"
                   >
                     <div className="flex items-start gap-3 p-4">
-                      <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-white text-[#1e3a8a]">
+                      <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-unibus-surface text-unibus-brand">
                         {selectedStationDirection === "to-station" ? <MapPin className="h-5 w-5" /> : <Train className="h-5 w-5" />}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-bold text-white/70">
+                        <p className="text-[13px] font-bold text-unibus-muted">
                           {selectedStationDirection === "to-station" ? "후문 출발" : "신창역 출발"}
                         </p>
-                        <p className="mt-0.5 text-[24px] font-black leading-8">{stationCountdown}</p>
+                        <p className="mt-0.5 text-[24px] font-bold leading-8">{stationCountdown}</p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <p className="text-[10px] font-bold text-white/70">
+                        <p className="text-[13px] font-bold text-unibus-muted">
                           {selectedStationDirection === "to-station" ? "열차 출발" : "열차 도착"}
                         </p>
-                        <p className="mt-1 text-[17px] font-black">
+                        <p className="mt-1 text-[17px] font-bold">
                           {selectedStationEventTime || "--:--"}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between border-t border-white/20 bg-[#1e3a8a] px-4 py-2.5 text-[11px]">
-                      <span className="truncate pr-3 font-bold text-white/90">
-                        {selectedStationRoute ? formatStationRouteName(selectedStationRoute.name) : "신창역 셔틀 노선을 추가해 주세요"}
+                    <div className="flex items-center justify-between border-t border-unibus-brand-border bg-unibus-brand-soft px-4 py-2.5 text-[13px]">
+                      <span className="truncate pr-3 font-bold text-unibus-text">
+                        {selectedStationRoute ? formatStationRouteName(selectedStationRoute.name) : "등록된 노선 없음"}
                       </span>
-                      <span className="shrink-0 font-extrabold text-white">
+                      <span className="shrink-0 font-semibold text-unibus-text">
                         {stationDeparture || "--:--"} 출발
                       </span>
                     </div>
@@ -695,7 +695,7 @@ export default function CampusShuttleWrapper() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
                         transition={reduceMotion ? { duration: 0 } : { duration: 0.22 }}
-                        className="px-1 text-[11px] font-semibold text-[rgba(30,58,138,0.68)]"
+                        className="px-1 text-[13px] font-semibold text-unibus-muted"
                       >
                         {selectedStationDirection === "to-station"
                           ? `열차 출발 ${stationOffset}분 전에 후문에서 출발합니다`
@@ -717,16 +717,16 @@ export default function CampusShuttleWrapper() {
                           }}
                           whileHover={reduceMotion ? undefined : { y: -1 }}
                           whileTap={reduceMotion ? undefined : { scale: 0.96 }}
-                          className={`relative isolate shrink-0 overflow-hidden rounded-full px-4 py-2 font-['Public_Sans'] text-[12px] font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2 ${
+                          className={`relative isolate shrink-0 overflow-hidden rounded-full px-4 py-2 text-[13px] font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 ${
                             selectedStationRoute?.id === route.id
-                              ? "text-white"
-                              : "border border-[rgba(30,58,138,0.18)] bg-white text-[#1e3a8a]"
+                              ? "text-unibus-brand-foreground"
+                              : "border border-unibus-divider bg-unibus-surface text-unibus-brand"
                           }`}
                         >
                           {selectedStationRoute?.id === route.id ? (
                             <motion.span
                               layoutId="station-route-indicator"
-                              className="absolute inset-0 -z-10 rounded-full bg-[#1e3a8a]"
+                              className="absolute inset-0 -z-10 rounded-full bg-unibus-brand"
                               transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 430, damping: 34 }}
                             />
                           ) : null}
@@ -744,20 +744,18 @@ export default function CampusShuttleWrapper() {
                   onClick={() => setSheetExpanded(true)}
                   whileHover={reduceMotion ? undefined : { y: -1 }}
                   whileTap={reduceMotion ? undefined : { scale: 0.99 }}
-                  className="flex w-full items-center gap-3 rounded-lg border border-[rgba(30,58,138,0.16)] bg-white p-3 text-left transition-colors hover:bg-[rgba(30,58,138,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2"
+                  className="flex w-full items-center gap-3 rounded-lg border border-unibus-divider bg-unibus-surface p-3 text-left transition-colors hover:bg-unibus-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2"
                 >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#1e3a8a] text-white">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-unibus-brand-soft text-unibus-text">
                     <Bus className="size-5" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[14px] font-extrabold text-[#1e3a8a]">학내순환 운행 안내</span>
-                    <span className="block truncate text-[11px] font-semibold text-[rgba(30,58,138,0.65)]">
+                    <span className="block text-[15px] font-medium text-unibus-text">
                       {campusLoopRoute ? getServiceRuleSummary(campusLoopRoute) : "10분 간격 출발"}
                     </span>
                   </span>
                   <span className="shrink-0 text-right">
-                    <span className="block text-[10px] font-bold text-[rgba(30,58,138,0.5)]">정류장</span>
-                    <span className="block text-[16px] font-black text-[#1e3a8a]">{activeStops.length}개</span>
+                    <span className="text-[13px] text-unibus-muted">정류장 {activeStops.length}개</span>
                   </span>
                 </motion.button>
               )}
@@ -771,13 +769,13 @@ export default function CampusShuttleWrapper() {
                 className="relative flex w-full shrink-0 flex-col items-start gap-3 scrollbar-hide"
               >
                 {stopsWithArrival.length === 0 ? (
-                  <div className="w-full rounded-[18px] border border-dashed border-[rgba(30,58,138,0.24)] p-6 text-center">
-                    <MapPin className="mx-auto mb-2 h-6 w-6 text-[rgba(30,58,138,0.5)]" />
-                    <p className="font-['Public_Sans'] text-[13px] font-semibold text-[rgba(30,58,138,0.7)]">
+                  <div className="w-full rounded-[18px] border border-dashed border-unibus-divider p-6 text-center">
+                    <MapPin className="mx-auto mb-2 h-6 w-6 text-unibus-muted" />
+                    <p className="text-[13px] font-semibold text-unibus-muted">
                       표시할 정류장이 없습니다
                     </p>
-                    <p className="mt-1 font-['Public_Sans'] text-[12px] text-[rgba(30,58,138,0.5)]">
-                      관리자 노선 관리에서 정류장 위치를 저장하면 여기에 표시됩니다.
+                    <p className="mt-1 text-[13px] text-unibus-muted">
+                      노선 정보를 확인해 주세요.
                     </p>
                   </div>
                 ) : (
@@ -793,10 +791,10 @@ export default function CampusShuttleWrapper() {
                       whileHover={reduceMotion ? undefined : { y: -2 }}
                       whileTap={reduceMotion ? undefined : { scale: 0.99 }}
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      className={`relative w-full shrink-0 rounded-[16px] border bg-white text-left transition-[border-color,background-color,box-shadow,opacity] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2 ${
+                      className={`relative w-full shrink-0 rounded-[16px] border bg-unibus-surface text-left transition-[border-color,background-color,box-shadow,opacity] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 ${
                         selectedStopId === stop.id
-                          ? "border-[#1e3a8a]/40 bg-[#f8faff] shadow-[0_8px_22px_rgba(30,58,138,0.1)]"
-                          : "border-[rgba(30,58,138,0.1)]"
+                          ? "border-unibus-brand/40 bg-unibus-brand-soft "
+                          : "border-unibus-divider"
                       } ${
                         !stop.estimate?.minutes ? "opacity-80" : ""
                       }`}
@@ -804,23 +802,23 @@ export default function CampusShuttleWrapper() {
                       <div className="flex items-center gap-[14px] p-[16px] w-full">
                         <div
                           className={`${
-                            stop.estimate?.state === "arriving" ? "bg-[#1e3a8a]" : "border border-[rgba(30,58,138,0.18)] bg-white"
+                            stop.estimate?.state === "arriving" ? "bg-unibus-brand" : "border border-unibus-divider bg-unibus-surface"
                           } relative rounded-[12px] shrink-0 size-[46px] flex items-center justify-center ${
-                            stop.estimate?.state === "arriving" ? "shadow-[0px_4px_6px_-1px_rgba(30,58,138,0.2)]" : ""
+                            stop.estimate?.state === "arriving" ? "" : ""
                           }`}
                         >
                           {mode === "station" ? (
-                            <RouteIcon className={`w-5 h-5 ${stop.estimate?.state === "arriving" ? "text-white" : "text-[#1e3a8a]"}`} />
+                            <RouteIcon className={`w-5 h-5 ${stop.estimate?.state === "arriving" ? "text-unibus-brand-foreground" : "text-unibus-brand"}`} />
                           ) : (
-                            <Bus className={`w-5 h-5 ${stop.estimate?.state === "arriving" ? "text-white" : "text-[#1e3a8a]"}`} />
+                            <Bus className={`w-5 h-5 ${stop.estimate?.state === "arriving" ? "text-unibus-brand-foreground" : "text-unibus-brand"}`} />
                           )}
                         </div>
 
                         <div className="flex-1 min-w-0">
-                          <p className="font-['Public_Sans'] font-bold text-[#1e3a8a] text-[16px] leading-[24px] truncate">
+                          <p className="font-bold text-unibus-brand text-[16px] leading-[24px] truncate">
                             {t(stop.nameKo, stop.nameEn)}
                           </p>
-                          <p className="font-['Public_Sans'] font-medium text-[rgba(30,58,138,0.62)] text-[11px] leading-[16.5px]">
+                          <p className="font-medium text-unibus-muted text-[13px] leading-[16.5px]">
                             {stop.estimate?.busLabel
                               ? `${stop.estimate.busLabel} · ${stop.order}번째 정류장`
                               : `${mode === "station" ? "신창역 셔틀" : "학내순환"} · ${stop.order}번째 정류장`}
@@ -828,15 +826,15 @@ export default function CampusShuttleWrapper() {
                         </div>
 
                         <div className="flex flex-col items-end">
-                          <div className={`font-['Public_Sans'] font-bold text-[10px] tracking-[0.25px] uppercase ${
-                            stop.estimate?.state === "arriving" ? "text-[#1e3a8a]" : "text-[rgba(30,58,138,0.48)]"
+                          <div className={`font-bold text-[13px] tracking-[0.25px] uppercase ${
+                            stop.estimate?.state === "arriving" ? "text-unibus-brand" : "text-unibus-muted"
                           }`}>
                             {stop.estimate?.state === "arriving"
                               ? "곧 도착"
                               : stop.estimate?.state === "stale" ? "위치 지연" : "예상 시간"}
                           </div>
-                          <div className={`font-['Public_Sans'] font-extrabold text-[16px] leading-[24px] ${
-                            !stop.estimate?.minutes ? "text-[rgba(30,58,138,0.48)]" : "text-[#1e3a8a]"
+                          <div className={`font-semibold text-[16px] leading-[24px] ${
+                            !stop.estimate?.minutes ? "text-unibus-muted" : "text-unibus-brand"
                           }`}>
                             {stop.estimate?.state === "arriving" && stop.estimate.minutes === 1
                               ? "잠시 후"

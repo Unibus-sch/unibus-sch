@@ -211,25 +211,22 @@ export default function HomeWrapper() {
   }, [automaticTrainDay]);
 
   return (
-    <div className="bg-[#f6f6f8] content-stretch flex flex-col items-start relative size-full">
-      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-y-auto overscroll-y-contain bg-white pb-6 shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] scrollbar-hide [-webkit-overflow-scrolling:touch]">
+    <div className="bg-background content-stretch flex flex-col items-start relative size-full">
+      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-y-auto overscroll-y-contain bg-unibus-surface pb-6 scrollbar-hide [-webkit-overflow-scrolling:touch]">
 
         {/* Header – sticky, no entrance animation */}
         <div className="sticky top-0 z-30 w-full pt-safe">
-          <div className="backdrop-blur-[6px] bg-[rgba(255,255,255,0.9)] flex flex-row items-center w-full">
-            <div className="content-stretch flex items-center justify-between pb-[12px] pt-[16px] px-[24px] relative w-full">
+          <div className="backdrop-blur-[6px] bg-unibus-surface/95 flex flex-row items-center w-full">
+            <div className="content-stretch flex items-center justify-between pb-[12px] pt-[16px] px-[20px] relative w-full">
               <div className="content-stretch flex flex-col items-start relative shrink-0">
-                <div className="flex flex-col font-['Public_Sans'] font-medium justify-center leading-[0] relative shrink-0 text-[#64748b] text-[12px] tracking-[0.6px] uppercase">
-                  <p className="leading-[16px]"></p>
-                </div>
-                <div className="flex flex-col font-['Public_Sans'] font-bold justify-center leading-[0] relative shrink-0 text-[#0f172a] text-[24px]">
+                <div className="font-['Public_Sans'] flex flex-col font-bold justify-center leading-[0] relative shrink-0 text-unibus-text text-[21px]">
                   <p className="leading-[32px]">UNIBUS SCH</p>
                 </div>
               </div>
               <button
                 onClick={() => navigate("/notice")}
                 aria-label={t("공지사항 보기", "View notices")}
-                className="unibus-pressable bg-[#f1f5f9] content-stretch flex items-center justify-center relative rounded-[9999px] shrink-0 size-[40px] text-[#0f172a] hover:bg-[#e2e8f0]"
+                className="unibus-pressable bg-unibus-surface-subtle content-stretch flex items-center justify-center relative rounded-[9999px] shrink-0 size-[40px] text-unibus-text hover:bg-unibus-divider"
               >
                 <div className="h-[20px] relative shrink-0 w-[16px]">
                   <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 20">
@@ -247,112 +244,59 @@ export default function HomeWrapper() {
           className="w-full animate-[routeFade_180ms_ease-out]"
         >
 
-              {/* Nearest Stop Card */}
-              <div className="unibus-section-reveal relative shrink-0 w-full">
-                <div className="content-stretch flex flex-col items-start px-[24px] py-[16px] relative w-full">
-                  <button
-                    type="button"
-                    aria-label={t("셔틀버스 운행 현황 보기", "View shuttle service status")}
-                    className="unibus-pressable group home-accent-gradient bg-[#1e3a8a] relative rounded-[16px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] shrink-0 w-full overflow-hidden cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)] focus-visible:ring-offset-2"
-                    onClick={() => navigate("/campus-shuttle")}
-                  >
-                    <div className="content-stretch flex flex-col items-start p-[24px] relative w-full">
-                      <div className="home-accent-circle absolute bg-[rgba(255,255,255,0.1)] right-[-16px] rounded-[9999px] size-[128px] top-[-16px]" />
-                      <div className="home-accent-circle absolute bg-[rgba(255,255,255,0.05)] bottom-[-32px] left-[-32px] rounded-[9999px] size-[128px]" />
-
-                      <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-full z-10">
-                        <div className="content-stretch flex gap-[8px] items-center opacity-90 relative shrink-0 w-full">
-                          <div className="h-[11.667px] relative shrink-0 w-[9.333px]">
-                            <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 9.33333 11.6667">
-                              <path d={svgPaths.p3d8f00c0} fill="white" />
-                            </svg>
-                          </div>
-                          <div className="flex flex-col font-['Public_Sans'] font-medium justify-center leading-[0] text-[12px] text-white tracking-[1.2px] uppercase">
-                            <p className="leading-[16px]">{t("가장 가까운 정류장", "Nearest Stop")}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col font-['Public_Sans'] font-bold justify-center leading-[0] text-[20px] text-white w-full">
-                          <p className="leading-[28px]">{nearestStopLabel}</p>
-                        </div>
-
-                        <div className="content-stretch flex items-end justify-between pt-[12px] relative shrink-0 w-full">
-                          <div className="content-stretch flex flex-col items-start relative shrink-0">
-                            <div className="flex flex-col font-['Public_Sans'] font-normal justify-center leading-[0] text-[14px] text-white opacity-80">
-                              <p className="leading-[20px]">{t("운행 현황", "Service Status")}</p>
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              {isRefreshing && routePath.length === 0 ? (
-                                <span className="font-['Public_Sans'] font-bold text-[16px] text-white/70">{t("확인 중...", "Checking...")}</span>
-                              ) : busActive ? (
-                                <>
-                                  <div className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
-                                  <div className="flex items-baseline gap-1">
-                                    <span className="font-['Public_Sans'] font-black text-[20px] text-white leading-[28px]">
-                                      {nextArrival ? `${nextArrival}분` : t("운행 중", "In Service")}
-                                    </span>
-                                    {nextArrival && (
-                                      <span className="font-['Public_Sans'] font-bold text-[14px] text-white/80">
-                                        {t("후 도착", "to arrive")}
-                                      </span>
-                                    )}
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <div className="w-2 h-2 rounded-full bg-white/40" />
-                                  <span className="font-['Public_Sans'] font-black text-[20px] text-white/70 leading-[28px]">{t("운행 없음", "No Service")}</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-
-                          <span
-                            aria-hidden="true"
-                            className="content-stretch flex items-center justify-center p-[4px] relative rounded-[9999px] shrink-0 size-[48px] border-4 border-[rgba(255,255,255,0.2)] transition-colors group-hover:border-[rgba(255,255,255,0.4)]"
-                          >
-                            <div className="h-[22.167px] relative shrink-0 w-[18.667px]">
-                              <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 18.6667 22.1667">
-                                <path d={svgPaths.p5416200} fill="white" />
-                              </svg>
-                            </div>
-                          </span>
-                        </div>
-                      </div>
+              <section className="unibus-section-reveal w-full px-5 py-3">
+                <button
+                  type="button"
+                  aria-label={t("셔틀버스 운행 현황 보기", "View shuttle service status")}
+                  onClick={() => navigate("/campus-shuttle")}
+                  className="font-['Public_Sans'] unibus-feature-card unibus-pressable w-full p-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)]"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-[13px] font-medium text-white/80">{locationStatus === "ready" ? t("가까운 정류장", "Nearest stop") : t("셔틀 운행", "Shuttle service")}</span>
+                    <span className="flex items-center gap-1 text-[13px] font-medium text-white/90">
+                      {t("지도 보기", "View map")} <ChevronRight className="size-4" aria-hidden="true" />
+                    </span>
+                  </div>
+                  <p className="mt-2 text-[24px] font-semibold leading-8 text-white">{locationStatus === "ready" ? nearestStopLabel : t("학내순환", "Campus shuttle")}</p>
+                  <div className="mt-3 flex items-end justify-between gap-3 pt-4">
+                    <div>
+                      {isRefreshing && routePath.length === 0 ? (
+                        <p className="text-[18px] font-medium text-white">{t("운행 확인 중", "Checking service")}</p>
+                      ) : busActive ? (
+                        <p className="flex flex-wrap items-baseline gap-1.5 text-white">
+                          <span className="text-[32px] font-semibold leading-10 tabular-nums">{nextArrival ? `${nextArrival}분` : t("운행 중", "In service")}</span>
+                          {nextArrival ? <span className="text-[15px] font-medium">{t("후 도착", "to arrive")}</span> : null}
+                        </p>
+                      ) : (
+                        <p className="text-[18px] font-medium text-white">{t("현재 운행 없음", "No current service")}</p>
+                      )}
                     </div>
-                  </button>
-                </div>
-              </div>
+                    <span className="unibus-feature-bus grid size-12 shrink-0 place-items-center rounded-full"><BusFront className="size-6 text-white/90" strokeWidth={1.5} aria-hidden="true" /></span>
+                  </div>
+                </button>
+              </section>
 
-              {/* Compact navigation */}
-              <div className="unibus-section-reveal unibus-section-delay-1 w-full px-6 py-3">
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { path: "/campus-shuttle", label: t("셔틀", "Shuttle"), icon: MapPinned },
-                    { path: "/commuter-bus", label: t("통학", "Commuter"), icon: BusFront },
-                    { path: "/notice", label: t("공지", "Notices"), icon: Bell },
-                  ].map((action) => (
-                    <button
-                      key={action.path}
-                      type="button"
-                      onClick={() => navigate(action.path)}
-                      className="unibus-pressable flex h-[76px] flex-col items-center justify-center gap-2 rounded-xl border border-[#e2e8f0] bg-white text-[#1e3a8a] shadow-sm hover:border-[#c9d6ea] hover:bg-[#f8fafc] hover:shadow-[0_8px_22px_rgba(30,58,138,0.09)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/40"
-                    >
-                      <action.icon className="size-5" strokeWidth={2.2} aria-hidden="true" />
-                      <span className="text-[12px] font-extrabold">{action.label}</span>
-                    </button>
-                  ))}
-                </div>
+              <div className="unibus-section-reveal unibus-section-delay-1 grid w-full grid-cols-2 gap-3 px-5 pb-2">
+                {[
+                  { path: "/campus-shuttle", label: t("셔틀 지도", "Shuttle map"), icon: MapPinned },
+                  { path: "/commuter-bus", label: t("통학 노선", "Commuter routes"), icon: BusFront },
+                ].map((action) => (
+                  <button key={action.path} type="button" onClick={() => navigate(action.path)}
+                    className="unibus-shortcut unibus-pressable flex min-h-[56px] items-center justify-center gap-2 rounded-2xl px-2 text-[14px] font-medium text-unibus-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)]">
+                    <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-unibus-brand-soft"><action.icon className="size-[18px] text-unibus-brand" strokeWidth={1.75} aria-hidden="true" /></span>
+                    {action.label}
+                  </button>
+                ))}
               </div>
 
               {/* Sinchang timetable */}
-              <section className="unibus-section-reveal unibus-section-delay-2 w-full px-6 py-4">
+              <section className="unibus-section-reveal unibus-section-delay-2 w-full px-5 py-3">
                 <div className="mb-3 flex items-end justify-between">
                   <div>
-                    <h2 className="text-[18px] font-extrabold leading-7 text-[#0f172a]">신창역 전철</h2>
-                    <p className="text-[11px] font-semibold text-[#64748b]">1호선 · 서울 방면</p>
+                    <h2 className="text-[18px] font-semibold leading-7 text-unibus-text">신창역 전철</h2>
+                    <p className="text-[13px] font-medium text-unibus-muted">1호선 · 서울 방면</p>
                   </div>
-                  <span className="rounded-md bg-[#f1f5f9] px-2 py-1 text-[10px] font-extrabold text-[#64748b]">
+                  <span className="rounded-md bg-unibus-surface-subtle px-2 py-1 text-[13px] font-medium text-unibus-muted">
                     {automaticTrainDay === "weekday" ? "평일" : "토·공휴일"}
                   </span>
                 </div>
@@ -361,43 +305,36 @@ export default function HomeWrapper() {
                   type="button"
                   onClick={openTimetable}
                   aria-label="신창역 전체 전철 시간표 보기"
-                  className="unibus-pressable w-full overflow-hidden rounded-xl border border-[#dbe4f5] bg-white text-left shadow-[0_4px_18px_rgba(30,58,138,0.08)] hover:border-[#c9d6ea] hover:shadow-[0_10px_26px_rgba(30,58,138,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/40"
+                  className="unibus-pressable w-full overflow-hidden rounded-xl border border-unibus-divider bg-unibus-surface text-left hover:border-[#c9d6ea] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand/40"
                 >
-                  <div className="flex items-center justify-between bg-[#eef3ff] px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <span className="grid size-9 place-items-center rounded-full bg-[#1e3a8a] text-white">
-                        <TrainFront className="size-4" aria-hidden="true" />
+                  <div className="border-b border-unibus-divider px-4 py-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-2 text-[14px] font-semibold text-unibus-text">
+                        <TrainFront className="size-[18px] shrink-0 text-unibus-muted" aria-hidden="true" /> 다음 출발
                       </span>
-                      <div>
-                        <p className="text-[13px] font-extrabold text-[#0f172a]">다음 출발</p>
-                        <p className="text-[10px] font-semibold text-[#64748b]">후문 셔틀은 전철 출발 10분 전</p>
-                      </div>
+                      <span className="flex shrink-0 items-center gap-1 whitespace-nowrap text-[13px] font-medium text-unibus-brand">
+                        시간표 <ChevronRight className="size-4" aria-hidden="true" />
+                      </span>
                     </div>
-                    <span className="flex items-center gap-1 text-[11px] font-extrabold text-[#1e3a8a]">
-                      전체 시간표 <ChevronRight className="size-4" aria-hidden="true" />
-                    </span>
                   </div>
 
-                  <div className="divide-y divide-[#f1f5f9] px-4">
+                  <div className="divide-y divide-unibus-divider p-2">
                     {upcomingTrains.map((train, index) => (
-                      <div key={`${train.time}-${train.destination}-${train.dayOffset}`} className="flex min-h-[58px] items-center gap-3">
-                        <p className={`w-[54px] tabular-nums text-[18px] font-black ${index === 0 ? "text-[#1e3a8a]" : "text-[#0f172a]"}`}>
+                      <div key={`${train.time}-${train.destination}-${train.dayOffset}`} className={`flex min-h-[56px] items-center gap-2 px-2 ${index === 0 ? "unibus-next-departure" : ""}`}>
+                        <p className={`w-[62px] shrink-0 tabular-nums text-[20px] font-semibold ${index === 0 ? "text-unibus-brand" : "text-unibus-text"}`}>
                           {train.time}
                         </p>
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5">
-                            <p className="truncate text-[12px] font-bold text-[#334155]">{train.destination}행</p>
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <p className="truncate text-[14px] font-medium text-unibus-text">{train.destination}행</p>
                             {train.express ? (
-                              <span className="flex items-center gap-0.5 rounded bg-[#1e3a8a] px-1.5 py-0.5 text-[8px] font-black text-white">
+                              <span className="flex items-center gap-0.5 rounded bg-unibus-surface-subtle px-1.5 py-0.5 text-[12px] font-medium text-unibus-muted">
                                 <Zap className="size-2" aria-hidden="true" /> 급행
                               </span>
                             ) : null}
                           </div>
-                          <p className="text-[10px] font-semibold text-[#94a3b8]">
-                            {train.dayOffset > 0 ? "내일 첫차" : index === 0 ? "가장 빠른 전철" : "이후 출발"}
-                          </p>
                         </div>
-                        <p className="shrink-0 text-[11px] font-extrabold text-[#64748b]">
+                        <p className="shrink-0 text-[13px] font-medium text-unibus-muted">
                           {train.dayOffset > 0
                             ? "내일"
                             : train.minutesUntil <= 1 ? "곧 출발" : `${train.minutesUntil}분 후`}
@@ -409,51 +346,50 @@ export default function HomeWrapper() {
               </section>
 
               {/* Important notices */}
-              <section className="unibus-section-reveal unibus-section-delay-3 mb-5 w-full px-6 py-4">
+              <section className="unibus-section-reveal unibus-section-delay-3 mb-5 w-full px-5 py-3">
                 <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-[18px] font-extrabold leading-7 text-[#0f172a]">운행 공지</h2>
+                  <h2 className="text-[18px] font-semibold leading-7 text-unibus-text">운행 공지</h2>
                   <button
                     type="button"
                     onClick={() => navigate("/notice")}
-                    className="unibus-pressable flex items-center gap-0.5 rounded-lg px-2 py-1 text-[11px] font-extrabold text-[#64748b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)]"
+                    className="unibus-pressable flex items-center gap-0.5 rounded-lg px-2 py-1 text-[13px] font-medium text-unibus-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)]"
                   >
                     전체보기 <ChevronRight className="size-4" aria-hidden="true" />
                   </button>
                 </div>
 
-                <div className="overflow-hidden rounded-xl border border-[#e2e8f0] bg-white">
+                <div className="overflow-hidden rounded-xl border border-unibus-divider bg-unibus-surface">
                   {importantNotices.length > 0 ? importantNotices.map((notice, index) => (
                     <button
                       key={notice.id}
                       type="button"
                       onClick={() => navigate("/notice")}
-                      className={`unibus-pressable flex min-h-[66px] w-full items-center gap-3 px-4 text-left hover:bg-unibus-surface-subtle focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)] ${index > 0 ? "border-t border-[#f1f5f9]" : ""}`}
+                      className={`unibus-pressable flex min-h-[66px] w-full items-center gap-3 px-4 py-3 text-left hover:bg-unibus-surface-subtle focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)] ${index > 0 ? "border-t border-unibus-divider" : ""}`}
                     >
-                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#eef3ff] text-[#1e3a8a]">
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-unibus-brand-soft text-unibus-brand">
                         <Bell className="size-4" aria-hidden="true" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px] font-extrabold text-[#0f172a]">{notice.title}</span>
-                        <span className="block text-[10px] font-semibold text-[#94a3b8]">
+                        <span className="block line-clamp-2 break-keep text-[14px] font-medium leading-5 text-unibus-text">{notice.title}</span>
+                        <span className="block text-[13px] font-medium text-unibus-muted">
                           {new Date(notice.createdAt).toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}
                         </span>
                       </span>
-                      <ChevronRight className="size-4 shrink-0 text-[#94a3b8]" aria-hidden="true" />
+                      <ChevronRight className="size-4 shrink-0 text-unibus-muted" aria-hidden="true" />
                     </button>
                   )) : (
                     <button
                       type="button"
                       onClick={() => navigate("/notice")}
-                      className="unibus-pressable flex min-h-[66px] w-full items-center gap-3 px-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)]"
+                      className="unibus-pressable flex min-h-[66px] w-full items-center gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)]"
                     >
-                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#f1f5f9] text-[#64748b]">
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-unibus-surface-subtle text-unibus-muted">
                         <Bell className="size-4" aria-hidden="true" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block text-[13px] font-extrabold text-[#0f172a]">새로운 운행 공지가 없습니다</span>
-                        <span className="block text-[10px] font-semibold text-[#94a3b8]">공지사항에서 전체 내용을 확인하세요</span>
+                        <span className="block text-[14px] font-medium text-unibus-text">새로운 운행 공지가 없습니다</span>
                       </span>
-                      <ChevronRight className="size-4 shrink-0 text-[#94a3b8]" aria-hidden="true" />
+                      <ChevronRight className="size-4 shrink-0 text-unibus-muted" aria-hidden="true" />
                     </button>
                   )}
                 </div>

@@ -49,9 +49,9 @@ const escapeHtml = (value: string) =>
 // 지도 앱에서 익숙한 핀형 차량 마커. 핀 끝이 실제 좌표를 가리키고, 작은 화살표만 진행 방향을 표시한다.
 const BUS_MARKER_CONTENT = (label: string, rotation = 0, etaLabel?: string) => `
   <div style="width:104px;height:78px;display:flex;flex-direction:column;align-items:center;cursor:pointer;filter:drop-shadow(0 4px 8px rgba(15,23,42,0.28));">
-    <div style="max-width:100px;margin-bottom:4px;background:white;color:#0f172a;border:1px solid rgba(15,23,42,0.12);box-shadow:0 2px 5px rgba(15,23,42,0.12);padding:4px 8px;border-radius:8px;font-size:11px;font-weight:800;line-height:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:sans-serif;text-align:center;">
+    <div style="max-width:140px;margin-bottom:4px;background:white;color:#0f172a;border:1px solid rgba(15,23,42,0.12);box-shadow:0 2px 5px rgba(15,23,42,0.12);padding:4px 8px;border-radius:8px;font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:sans-serif;text-align:center;">
       <div>${escapeHtml(label)}</div>
-      ${etaLabel ? `<div style="margin-top:2px;color:#64748b;font-size:9px;font-weight:700;">${escapeHtml(etaLabel)} 도착 예정</div>` : ""}
+      ${etaLabel ? `<div style="margin-top:2px;color:#64748b;font-size:12px;font-weight:500;">${escapeHtml(etaLabel)} 도착 예정</div>` : ""}
     </div>
     <div style="position:relative;width:38px;height:42px;">
       <div style="position:absolute;left:50%;top:-6px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #ef4444;transform:translateX(-50%) rotate(${rotation}deg);transform-origin:50% 22px;transition:transform 0.25s ease;"></div>
@@ -71,7 +71,7 @@ const BUS_MARKER_CONTENT = (label: string, rotation = 0, etaLabel?: string) => `
 
 const STOP_MARKER_CONTENT = (name: string, _type: 'start' | 'end' | 'middle' = 'middle') => `
   <div style="width:128px;height:58px;display:flex;flex-direction:column;align-items:center;cursor:default;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.3));">
-    <div style="max-width:122px;background:#1e3a8a;color:white;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;line-height:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:sans-serif;letter-spacing:0;">
+    <div style="max-width:160px;background:#1e3a8a;color:white;padding:4px 10px;border-radius:6px;font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:sans-serif;letter-spacing:0;">
       ${escapeHtml(name)}
     </div>
     <div style="width:2.5px;height:10px;background:#1e3a8a;"></div>
@@ -786,25 +786,27 @@ export default function NaverMapComponent({
       <div ref={mapRef} className="absolute inset-0 w-full h-full z-0" style={{ background: '#e2e8f0' }} />
 
       {/* 지도 컨트롤 버튼 */}
-      <div className="absolute content-stretch flex flex-col gap-[8px] items-start right-[16px] top-[128px] z-20">
+      <div className="absolute content-stretch flex flex-col gap-[8px] items-start right-[16px] top-[108px] z-20">
         <button
           onClick={handleZoomIn}
-          className="bg-white content-stretch flex items-center justify-center p-px relative rounded-[12px] shrink-0 size-[40px] border border-[#f1f5f9] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] hover:bg-gray-50 active:scale-95 transition-all"
+          aria-label="지도 확대"
+          className="bg-unibus-surface text-unibus-text content-stretch flex items-center justify-center p-px relative rounded-[12px] shrink-0 size-[40px] border border-unibus-divider hover:bg-gray-50 active:scale-95 transition-all"
         >
           <div className="relative shrink-0 size-[14px]">
             <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 14 14">
-              <path d="M14 8H8V14H6V8H0V6H6V0H8V6H14V8Z" fill="#334155" />
+              <path d="M14 8H8V14H6V8H0V6H6V0H8V6H14V8Z" fill="currentColor" />
             </svg>
           </div>
         </button>
 
         <button
           onClick={handleZoomOut}
-          className="bg-white content-stretch flex items-center justify-center p-px relative rounded-[12px] shrink-0 size-[40px] border border-[#f1f5f9] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] hover:bg-gray-50 active:scale-95 transition-all"
+          aria-label="지도 축소"
+          className="bg-unibus-surface text-unibus-text content-stretch flex items-center justify-center p-px relative rounded-[12px] shrink-0 size-[40px] border border-unibus-divider hover:bg-gray-50 active:scale-95 transition-all"
         >
           <div className="h-[2px] relative shrink-0 w-[14px]">
             <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 14 2">
-              <path d="M0 2V0H14V2H0V2" fill="#334155" />
+              <path d="M0 2V0H14V2H0V2" fill="currentColor" />
             </svg>
           </div>
         </button>
@@ -812,11 +814,12 @@ export default function NaverMapComponent({
         <div className="pt-[8px]">
           <button
             onClick={handleLocate}
-            className="bg-white content-stretch flex items-center justify-center p-px relative rounded-[12px] shrink-0 size-[40px] border border-[rgba(30,58,138,0.05)] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] hover:bg-blue-50 active:scale-95 transition-all"
+            aria-label="내 위치 보기"
+            className="bg-unibus-surface text-unibus-text content-stretch flex items-center justify-center p-px relative rounded-[12px] shrink-0 size-[40px] border border-unibus-divider hover:bg-unibus-surface-subtle active:scale-95 transition-all"
           >
             <div className="relative shrink-0 size-[21.9px]">
               <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21.9 21.9">
-                <path d="M10.95 10.95C12.1546 10.95 13.31 10.4705 14.1539 9.62661C14.9978 8.78271 15.4773 7.62728 15.4773 6.42273C15.4773 5.21817 14.9978 4.06274 14.1539 3.21884C13.31 2.37495 12.1546 1.89545 10.95 1.89545C9.74546 1.89545 8.59003 2.37495 7.74613 3.21884C6.90224 4.06274 6.42273 5.21817 6.42273 6.42273C6.42273 7.62728 6.90224 8.78271 7.74613 9.62661C8.59003 10.4705 9.74546 10.95 10.95 10.95ZM10.95 0C12.6572 0 14.2944 0.677588 15.5034 1.88656C16.7124 3.09554 17.39 4.73271 17.39 6.43991C17.39 12.2698 10.95 21.9 10.95 21.9C10.95 21.9 4.51 12.2698 4.51 6.43991C4.51 4.73271 5.18759 3.09554 6.39656 1.88656C7.60554 0.677588 9.24271 0 10.95 0Z" fill="#1E3A8A" />
+                <path d="M10.95 10.95C12.1546 10.95 13.31 10.4705 14.1539 9.62661C14.9978 8.78271 15.4773 7.62728 15.4773 6.42273C15.4773 5.21817 14.9978 4.06274 14.1539 3.21884C13.31 2.37495 12.1546 1.89545 10.95 1.89545C9.74546 1.89545 8.59003 2.37495 7.74613 3.21884C6.90224 4.06274 6.42273 5.21817 6.42273 6.42273C6.42273 7.62728 6.90224 8.78271 7.74613 9.62661C8.59003 10.4705 9.74546 10.95 10.95 10.95ZM10.95 0C12.6572 0 14.2944 0.677588 15.5034 1.88656C16.7124 3.09554 17.39 4.73271 17.39 6.43991C17.39 12.2698 10.95 21.9 10.95 21.9C10.95 21.9 4.51 12.2698 4.51 6.43991C4.51 4.73271 5.18759 3.09554 6.39656 1.88656C7.60554 0.677588 9.24271 0 10.95 0Z" fill="currentColor" />
               </svg>
             </div>
           </button>

@@ -1,0 +1,41 @@
+/* A navy focal point, tinted surfaces, and a quiet supporting hierarchy. */
+.unibus-theme :is(h1, h2, h3, h4, p) { word-break: keep-all; overflow-wrap: anywhere; }
+.unibus-card { border: 1px solid var(--unibus-divider); border-radius: 16px; background: var(--unibus-surface); }
+.unibus-feature-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 0;
+  border-radius: 16px;
+  background: #1e3a8a;
+  color: #fff;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.unibus-feature-card::before,
+.unibus-feature-card::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.unibus-feature-card::before { right: -16px; top: -16px; background: rgb(255 255 255 / 0.1); }
+.unibus-feature-card::after { left: -32px; bottom: -32px; background: rgb(255 255 255 / 0.05); }
+.dark .unibus-feature-card { background: linear-gradient(120deg, #263958, #344b74); box-shadow: 0 8px 20px rgb(0 0 0 / 0.16); }
+.unibus-feature-bus { border: 4px solid rgb(255 255 255 / 0.2); }
+.unibus-shortcut { border: 1px solid var(--unibus-brand-border); background: var(--unibus-surface); box-shadow: 0 3px 10px rgb(36 59 112 / 0.035); }
+.unibus-next-departure { position: relative; background: var(--unibus-brand-soft); border-radius: 10px; }
+.unibus-next-departure::before { content: ''; position: absolute; left: 0; top: 17px; bottom: 17px; width: 3px; border-radius: 0 3px 3px 0; background: var(--unibus-brand); }
+.unibus-notice-card { border-inline-start-width: 3px; }
+.unibus-route-preview { border-color: var(--unibus-brand-border); background: linear-gradient(145deg, var(--unibus-brand-soft), var(--unibus-surface)); }
+.unibus-primary-button { display:flex; min-height:48px; align-items:center; justify-content:center; gap:8px; border-radius:12px; background:var(--unibus-brand); color:var(--unibus-brand-foreground); font-size:16px; font-weight:600; transition:opacity 150ms ease; }
+.unibus-primary-button:hover { opacity:0.9; }
+.unibus-primary-button:focus-visible { outline:2px solid var(--unibus-focus); outline-offset:3px; }
+.unibus-settings-group { overflow:hidden; border:1px solid var(--unibus-divider); border-radius:16px; background:var(--unibus-surface); }
+.unibus-settings-group > * + * { border-top:1px solid var(--unibus-divider); }
+.unibus-settings-row { background:var(--unibus-surface); }
+.unibus-filter { min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+.unibus-sheet { box-shadow:0 -8px 32px rgb(0 0 0 / 0.12); }
+@media (prefers-reduced-motion: reduce) { .unibus-primary-button { transition:none; } }

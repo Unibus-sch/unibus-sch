@@ -13,7 +13,7 @@ interface RouteBusInfo {
   isSimulation?: boolean;
 }
 
-const getColor = (color?: string) => color || "#1e3a8a";
+
 
 function openPayco() {
   const ua = navigator.userAgent;
@@ -151,31 +151,29 @@ export default function CommuterBusWrapper() {
       : routes.filter((r) => r.region === selectedRegion);
 
   return (
-    <div className="bg-[#f6f6f8] content-stretch flex flex-col items-center relative size-full">
+    <div className="font-['Public_Sans'] bg-background content-stretch flex flex-col items-center relative size-full">
       <div
-        className="relative flex h-full w-full max-w-[430px] flex-col items-start overflow-y-auto overscroll-y-contain bg-white pb-6 shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] scrollbar-hide [-webkit-overflow-scrolling:touch]"
+        className="relative flex h-full w-full max-w-[430px] flex-col items-start overflow-y-auto overscroll-y-contain bg-unibus-surface pb-6 scrollbar-hide [-webkit-overflow-scrolling:touch]"
       >
         {/* Header */}
         <div className="sticky top-0 z-30 w-full pt-safe">
-          <div className="backdrop-blur-[6px] bg-[rgba(255,255,255,0.9)] flex items-center justify-between pb-[12px] pt-[16px] px-[16px] w-full">
+          <div className="backdrop-blur-[6px] bg-unibus-surface/95 flex items-center justify-between pb-[12px] pt-[16px] px-[16px] w-full">
             <button
               type="button"
               aria-label={t("홈으로 돌아가기", "Back to home")}
               onClick={() => navigate("/home")}
-              className="flex size-[40px] items-center justify-center rounded-full transition-all hover:bg-gray-100 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
+              className="flex size-[40px] items-center justify-center rounded-full transition-all hover:bg-gray-100 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
             >
-              <svg className="w-3 h-5" fill="none" viewBox="0 0 12 20" stroke="#0F172A" strokeWidth="2">
+              <svg className="w-3 h-5 text-unibus-text" fill="none" viewBox="0 0 12 20" stroke="currentColor" strokeWidth="2">
                 <path d="M11 1L1 10L11 19" />
               </svg>
             </button>
 
             <div className="flex flex-col items-center">
-              <p className="font-['Public_Sans'] font-bold text-[#0f172a] text-[18px] leading-[22.5px]">
+              <p className="font-bold text-unibus-text text-[18px] leading-[22.5px]">
                 {t("통학버스", "Commuter Bus")}
               </p>
-              <p className="font-['Public_Sans'] font-bold text-[#1e3a8a] text-[10px] leading-[15px] tracking-[1px] uppercase">
-                {t("지역 노선", "Regional Routes")}
-              </p>
+
             </div>
 
             <div className="w-[40px]" />
@@ -185,7 +183,7 @@ export default function CommuterBusWrapper() {
           <div
             role="group"
             aria-label={t("통학버스 지역 필터", "Commuter bus region filter")}
-            className="flex gap-2 overflow-x-auto border-b border-[#f1f5f9] px-[16px] py-[12px] scrollbar-hide"
+            className="flex gap-2 overflow-x-auto border-b border-unibus-divider px-[16px] py-[12px] scrollbar-hide"
           >
             {regions.map((region) => (
               <motion.button
@@ -196,16 +194,16 @@ export default function CommuterBusWrapper() {
                 whileHover={reduceMotion ? undefined : { y: -1 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 420, damping: 30 }}
-                className={`relative isolate overflow-hidden rounded-[9999px] px-4 py-2 font-['Public_Sans'] text-[12px] font-semibold whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2 ${
+                className={`unibus-filter relative isolate overflow-hidden rounded-xl px-4 py-2 text-[13px] font-semibold whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 ${
                   selectedRegion === region
-                    ? "text-white"
-                    : "bg-[#f1f5f9] text-[#64748b] hover:bg-[#e2e8f0]"
+                    ? "text-unibus-brand-foreground"
+                    : "bg-unibus-surface-subtle text-unibus-muted hover:bg-unibus-divider"
                 }`}
               >
                 {selectedRegion === region ? (
                   <motion.span
                     layoutId="commuter-region-indicator"
-                    className="absolute inset-0 -z-10 rounded-[9999px] bg-[#1e3a8a] shadow-[0_5px_14px_rgba(30,58,138,0.22)]"
+                    className="absolute inset-0 -z-10 rounded-xl bg-unibus-brand"
                     transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 430, damping: 34 }}
                   />
                 ) : null}
@@ -226,8 +224,8 @@ export default function CommuterBusWrapper() {
           {/* Loading */}
           {loading && (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
-              <div className="h-8 w-8 rounded-full border-2 border-[#1e3a8a] border-t-transparent animate-spin motion-reduce:animate-none" />
-              <p className="font-['Public_Sans'] text-[#64748b] text-[14px]">
+              <div className="h-8 w-8 rounded-full border-2 border-unibus-brand border-t-transparent animate-spin motion-reduce:animate-none" />
+              <p className="text-unibus-muted text-[14px]">
                 {t("노선 불러오는 중...", "Loading routes...")}
               </p>
             </div>
@@ -241,13 +239,13 @@ export default function CommuterBusWrapper() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="font-['Public_Sans'] font-bold text-[#0f172a] text-[15px]">
+              <p className="font-bold text-unibus-text text-[15px]">
                 {t("불러오기 실패", "Failed to load")}
               </p>
-              <p className="font-['Public_Sans'] text-[#94a3b8] text-[13px] text-center">{error}</p>
+              <p className="text-unibus-muted text-[13px] text-center">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="mt-2 rounded-lg bg-[#1e3a8a] px-5 py-2 font-['Public_Sans'] text-[13px] font-semibold text-white transition-transform active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
+                className="mt-2 rounded-lg bg-unibus-brand px-5 py-2 text-[13px] font-semibold text-unibus-brand-foreground transition-transform active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
               >
                 {t("다시 시도", "Retry")}
               </button>
@@ -268,7 +266,7 @@ export default function CommuterBusWrapper() {
               {filteredRoutes.map((route) => {
               const stopNames: string[] =
                 route.stops?.map((s: any) => s.name) || [];
-              const color = getColor(route.color);
+              const color = "var(--unibus-brand)";
               const isExpanded = expandedRoute === route.id;
               const liveInfo = routeBusMap[route.id];
 
@@ -281,8 +279,8 @@ export default function CommuterBusWrapper() {
                   exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
                   whileHover={reduceMotion ? undefined : { y: -2 }}
                   transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 360, damping: 30 }}
-                  className={`overflow-hidden rounded-[16px] border bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-[border-color,box-shadow] hover:shadow-[0_10px_24px_rgba(15,23,42,0.08)] ${
-                    isExpanded ? "border-[#1e3a8a]/30 shadow-[0_10px_24px_rgba(30,58,138,0.08)]" : "border-[#e2e8f0]"
+                  className={`overflow-hidden rounded-[16px] border bg-unibus-surface  transition-[border-color,box-shadow] ${
+                    isExpanded ? "border-unibus-brand/30 " : "border-unibus-divider"
                   }`}
                 >
                   <motion.button
@@ -294,14 +292,13 @@ export default function CommuterBusWrapper() {
                       setExpandedRoute(isExpanded ? null : route.id)
                     }
                     whileTap={reduceMotion ? undefined : { scale: 0.992 }}
-                    className="w-full p-[16px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1e3a8a]"
+                    className="w-full p-[16px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-unibus-brand"
                   >
                     <div className="flex items-start gap-3">
                       <div
-                        className="rounded-[12px] size-[48px] flex items-center justify-center shrink-0 shadow-lg"
-                        style={{ backgroundColor: color }}
+                        className="rounded-[12px] size-[40px] bg-unibus-brand-soft flex items-center justify-center shrink-0"
                       >
-                        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-5 h-5 text-unibus-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -311,39 +308,40 @@ export default function CommuterBusWrapper() {
                         </svg>
                       </div>
 
-                      <div className="flex-1">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <h3 className="font-['Public_Sans'] font-bold text-[#0f172a] text-[16px] leading-[24px]">
-                            {route.name}
+                          <h3 className="font-bold text-unibus-text text-[16px] leading-[24px]">
+                            {route.name?.replace(/\[(출발|도착)\]\s*/g, "")}
                           </h3>
-                          {route.region && (
-                            <span className="bg-[#f1f5f9] text-[#64748b] px-2 py-1 rounded-[4px] font-['Public_Sans'] font-bold text-[10px] uppercase">
-                              {route.region}
-                            </span>
-                          )}
                           {liveInfo ? (
-                            <span className="flex items-center gap-1 bg-[#22c55e]/10 text-[#16a34a] px-2 py-1 rounded-[4px] font-['Public_Sans'] font-bold text-[10px]">
-                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#22c55e] animate-pulse motion-reduce:animate-none" />
+                            <span className="flex items-center gap-1 bg-unibus-brand-soft text-unibus-brand px-2 py-1 rounded-[4px] font-bold text-[13px]">
+                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-unibus-brand animate-pulse motion-reduce:animate-none" />
                               {liveInfo.isSimulation ? t("시연 운행", "Demo Run") : t("운행 중", "In Service")}
                             </span>
                           ) : !route.isActive ? (
-                            <span className="bg-red-50 text-red-400 px-2 py-1 rounded-[4px] font-['Public_Sans'] font-bold text-[10px]">
+                            <span className="bg-unibus-surface-subtle text-unibus-muted px-2 py-1 rounded-[4px] font-bold text-[13px]">
                               {t("운행 중단", "Suspended")}
                             </span>
                           ) : null}
                         </div>
+                        {route.schedule && (
+                          <p className="font-medium text-unibus-text text-[15px] leading-[22px]">
+                            {route.schedule}
+                          </p>
+                        )}
+
                         {liveInfo && (
                           <div className="flex items-center gap-1 mb-1">
-                            <svg className="w-3 h-3 text-[#1e3a8a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-3 h-3 text-unibus-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span className="font-['Public_Sans'] font-bold text-[#1e3a8a] text-[12px]">
+                            <span className="font-bold text-unibus-brand text-[13px]">
                               {t(`도착 예상 ${liveInfo.etaMins}분`, `ETA ${liveInfo.etaMins} min`)}
                             </span>
                           </div>
                         )}
 
-                        <div className="flex items-center gap-4 text-[#64748b] text-[12px] font-['Public_Sans'] mb-2">
+                        {isExpanded ? <div className="flex items-center gap-4 text-unibus-muted text-[13px] mb-2">
                           {route.duration && (
                             <div className="flex items-center gap-1">
                               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -360,23 +358,17 @@ export default function CommuterBusWrapper() {
                               <span>{route.fare}</span>
                             </div>
                           )}
-                        </div>
+                        </div> : null}
 
-                        {route.schedule && (
-                          <p className="font-['Public_Sans'] font-medium text-[#1e3a8a] text-[12px] leading-[16px]">
-                            {route.schedule}
-                          </p>
-                        )}
-
-                        {route.description && (
-                          <p className="font-['Public_Sans'] text-[#64748b] text-[12px] leading-[18px] mt-1">
+                        {isExpanded && route.description && (
+                          <p className="text-unibus-muted text-[13px] leading-[18px] mt-1">
                             {route.description}
                           </p>
                         )}
                       </div>
 
                       <svg
-                        className={`mt-2 h-5 w-5 shrink-0 text-[#64748b] transition-transform duration-300 motion-reduce:transition-none ${
+                        className={`mt-2 h-5 w-5 shrink-0 text-unibus-muted transition-transform duration-300 motion-reduce:transition-none ${
                           isExpanded ? "rotate-180" : ""
                         }`}
                         fill="none"
@@ -398,10 +390,10 @@ export default function CommuterBusWrapper() {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
                       transition={reduceMotion ? { duration: 0 } : { duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                      className="overflow-hidden border-t border-[#f1f5f9] px-[16px] pb-[16px]"
+                      className="overflow-hidden border-t border-unibus-divider px-[16px] pb-[16px]"
                     >
                       <div className="pt-[16px]">
-                        <h4 className="font-['Public_Sans'] font-bold text-[#0f172a] text-[14px] mb-3">
+                        <h4 className="font-bold text-unibus-text text-[14px] mb-3">
                           {t("정류장 목록", "Route Stops")}
                         </h4>
                         {stopNames.length > 0 ? (
@@ -416,7 +408,7 @@ export default function CommuterBusWrapper() {
                               >
                                 <div className="relative flex flex-col items-center">
                                   <div
-                                    className="rounded-full size-[24px] flex items-center justify-center font-['Public_Sans'] font-bold text-[10px] z-10 text-white"
+                                    className="rounded-full size-[24px] flex items-center justify-center font-bold text-[13px] z-10 text-unibus-brand-foreground"
                                     style={{
                                       backgroundColor:
                                         index === 0
@@ -429,11 +421,11 @@ export default function CommuterBusWrapper() {
                                     {index + 1}
                                   </div>
                                   {index < stopNames.length - 1 && (
-                                    <div className="w-[2px] h-[24px] bg-[#e2e8f0] absolute top-[24px]" />
+                                    <div className="w-[2px] h-[24px] bg-unibus-divider absolute top-[24px]" />
                                   )}
                                 </div>
                                 <div className="flex-1 py-1">
-                                  <p className="font-['Public_Sans'] text-[14px] leading-[20px] font-semibold text-[#0f172a]">
+                                  <p className="text-[14px] leading-[20px] font-semibold text-unibus-text">
                                     {stop}
                                   </p>
                                 </div>
@@ -441,7 +433,7 @@ export default function CommuterBusWrapper() {
                             ))}
                           </div>
                         ) : (
-                          <p className="text-[#94a3b8] text-[13px] font-['Public_Sans']">
+                          <p className="text-unibus-muted text-[13px] font-['Public_Sans']">
                             {t("정류장 정보 없음", "No stop info")}
                           </p>
                         )}
@@ -453,23 +445,23 @@ export default function CommuterBusWrapper() {
                               e.stopPropagation();
                               setRouteModalId(route.id);
                             }}
-                            className="flex h-[44px] flex-1 items-center justify-center gap-2 rounded-[8px] border-2 border-[#1e3a8a] font-['Public_Sans'] text-[14px] font-bold text-[#1e3a8a] transition-all hover:bg-[#f0f4ff] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a] focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
+                            className="flex h-[44px] flex-1 items-center justify-center gap-2 rounded-[12px] border border-unibus-brand text-[14px] font-bold text-unibus-brand transition-all hover:bg-unibus-brand-soft active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                             </svg>
-                            {t("노선 전체 보기", "View Full Route")}
+                            {t("노선 지도", "Route map")}
                           </button>
                           <button
                             type="button"
                             onClick={route.isActive ? openPayco : undefined}
-                            className={`h-[44px] flex-1 rounded-[8px] font-['Public_Sans'] text-[14px] font-bold text-white shadow-lg transition-all hover:shadow-xl active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fa2828] focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none ${
+                            className={`h-[48px] flex-1 rounded-[12px] text-[14px] font-bold text-unibus-brand-foreground  transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none ${
                               !route.isActive ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                             style={{
                               background: route.isActive
-                                ? "linear-gradient(135deg, #fa2828 0%, #ff5a1f 100%)"
-                                : "#94a3b8",
+                                ? "var(--unibus-brand)"
+                                : "var(--unibus-text-muted)",
                             }}
                             disabled={!route.isActive}
                           >
@@ -493,8 +485,8 @@ export default function CommuterBusWrapper() {
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center py-12"
             >
-              <div className="bg-[#f1f5f9] rounded-full p-6 mb-4">
-                <svg className="w-12 h-12 text-[#94a3b8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="bg-unibus-surface-subtle rounded-full p-6 mb-4">
+                <svg className="w-12 h-12 text-unibus-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -503,16 +495,20 @@ export default function CommuterBusWrapper() {
                   />
                 </svg>
               </div>
-              <p className="font-['Public_Sans'] font-bold text-[#0f172a] text-[16px] mb-1">
+              <p className="font-bold text-unibus-text text-[16px] mb-1">
                 {t("노선을 찾을 수 없습니다", "No routes found")}
               </p>
-              <p className="font-['Public_Sans'] font-normal text-[#94a3b8] text-[14px] text-center">
+              <p className="font-normal text-unibus-muted text-[14px] text-center">
                 {selectedRegion === "to-school"
                   ? t("등교 노선이 없습니다", "No to-school routes")
                   : selectedRegion === "from-school"
                   ? t("하교 노선이 없습니다", "No from-school routes")
                   : t(`${selectedRegion} 지역 노선이 없습니다`, `No routes in ${selectedRegion}`)}
               </p>
+              <button type="button" onClick={() => setSelectedRegion(selectedRegion === "to-school" ? "from-school" : "to-school")}
+                className="mt-5 min-h-11 rounded-xl border border-unibus-divider px-5 text-[14px] font-medium text-unibus-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)]">
+                {selectedRegion === "to-school" ? t("하교 노선 보기", "View return routes") : t("등교 노선 보기", "View to-school routes")}
+              </button>
             </motion.div>
               ) : null}
               </motion.div>
@@ -528,7 +524,6 @@ export default function CommuterBusWrapper() {
         return (
           <RouteMapModal
             route={modal}
-            color={getColor(modal.color)}
             bus={routeBusMap[modal.id]}
             onClose={() => setRouteModalId(null)}
           />

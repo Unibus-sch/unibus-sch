@@ -48,7 +48,7 @@ export default function SignUpWrapper() {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
       // Fixed: Pass object instead of individual parameters
@@ -58,13 +58,13 @@ export default function SignUpWrapper() {
         name: formData.name,
         studentId: formData.studentId || undefined
       });
-      
+
       // Auto login after signup — AuthContext에 반영
       const loginResult = await api.login(formData.email, formData.password);
       login(loginResult.token, loginResult.user);
       navigate("/home");
     } catch {
-      setErrors({ 
+      setErrors({
         email: t("회원가입에 실패했습니다. 이미 존재하는 이메일일 수 있습니다.", "Signup failed. Email may already exist.")
       });
     } finally {
@@ -81,20 +81,22 @@ export default function SignUpWrapper() {
   };
 
   return (
-    <div className="relative flex size-full flex-col items-start overflow-y-auto overscroll-y-contain bg-gradient-to-b from-white to-[#f6f6f8] [-webkit-overflow-scrolling:touch]">
+    <div className="font-['Public_Sans'] relative flex size-full flex-col items-start overflow-y-auto overscroll-y-contain bg-unibus-surface [-webkit-overflow-scrolling:touch]">
       {/* Header */}
       <div className="sticky top-0 z-30 w-full pt-safe">
-        <div className="backdrop-blur-[6px] bg-[rgba(255,255,255,0.9)] flex items-center justify-between pb-[12px] pt-[16px] px-[16px] border-b border-[#f1f5f9]">
+        <div className="backdrop-blur-[6px] bg-unibus-surface/95 flex items-center justify-between pb-[12px] pt-[16px] px-[16px] border-b border-unibus-divider">
           <button
+            type="button"
+            aria-label={t("로그인으로 돌아가기", "Back to login")}
             onClick={() => navigate("/login")}
             className="flex items-center justify-center size-[40px] hover:bg-gray-100 rounded-full active:scale-95 transition-all"
           >
-            <svg className="w-3 h-5" fill="none" viewBox="0 0 12 20" stroke="#0F172A" strokeWidth="2">
+            <svg className="w-3 h-5" fill="none" viewBox="0 0 12 20" stroke="currentColor" strokeWidth="2">
               <path d="M11 1L1 10L11 19" />
             </svg>
           </button>
 
-          <div className="flex flex-col font-['Public_Sans'] font-bold h-[23px] justify-center leading-[0] text-[#0f172a] text-[18px] text-center tracking-[-0.27px]">
+          <div className="flex flex-col font-semibold h-[23px] justify-center leading-[0] text-unibus-text text-[18px] text-center tracking-[-0.27px]">
             <p className="leading-[22.5px]">회원가입</p>
           </div>
 
@@ -106,28 +108,26 @@ export default function SignUpWrapper() {
         {/* Logo and Title */}
         <div className="mb-8">
           <div className="flex gap-[8px] items-center mb-4">
-            <div className="bg-[#1e3b8a] content-stretch flex items-center justify-center relative rounded-[8px] shrink-0 size-[40px]">
+            <div className="bg-unibus-brand content-stretch flex items-center justify-center relative rounded-[12px] shrink-0 size-[40px]">
               <div className="h-[19px] relative shrink-0 w-[16px]">
                 <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 19">
-                  <path d={svgPaths.pdce8f20} fill="white" />
+                  <path d={svgPaths.pdce8f20} fill="var(--unibus-brand-foreground)" />
                 </svg>
               </div>
             </div>
-            <div className="font-['Public_Sans'] font-bold text-[#1e3b8a] text-[20px] tracking-[-0.5px] leading-[28px]">UNIBUS SCH</div>
+            <div className="font-semibold text-unibus-brand text-[20px] tracking-[-0.5px] leading-[28px]">UNIBUS SCH</div>
           </div>
 
-          <h1 className="font-['Public_Sans'] font-bold text-[#0f172a] text-[28px] tracking-[-0.7px] leading-[35px] mb-2">
+          <h1 className="font-semibold text-unibus-text text-[28px] tracking-[-0.7px] leading-[35px] mb-2">
             계정 만들기
           </h1>
-          <p className="font-['Public_Sans'] font-normal text-[#64748b] text-[16px] leading-[24px]">
-            순천향대학교 셔틀버스 서비스에 가입하세요
-          </p>
+
         </div>
 
         {/* Form */}
         <div className="space-y-4 mb-6">
           <div>
-            <label className="font-['Public_Sans'] font-semibold text-[#0f172a] text-[14px] leading-[21px] block mb-2">
+            <label className="font-semibold text-unibus-text text-[14px] leading-[21px] block mb-2">
               이름
             </label>
             <input
@@ -135,10 +135,10 @@ export default function SignUpWrapper() {
               value={formData.name}
               onChange={(e) => handleChange("name", e.target.value)}
               placeholder="이름을 입력하세요"
-              className={`w-full h-[56px] px-4 bg-white border rounded-[8px] font-['Public_Sans'] text-[16px] text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 transition-all ${
+              className={`w-full h-[52px] px-4 bg-unibus-surface border rounded-[12px] text-[16px] text-unibus-text placeholder:text-unibus-muted focus:outline-none focus:ring-2 transition-all ${
                 errors.name
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                  : "border-[#cbd5e1] focus:border-[#1e3b8a] focus:ring-[#1e3b8a]/20"
+                  : "border-unibus-divider focus:border-unibus-brand focus:ring-unibus-brand/20"
               }`}
             />
             {errors.name && (
@@ -147,7 +147,7 @@ export default function SignUpWrapper() {
           </div>
 
           <div>
-            <label className="font-['Public_Sans'] font-semibold text-[#0f172a] text-[14px] leading-[21px] block mb-2">
+            <label className="font-semibold text-unibus-text text-[14px] leading-[21px] block mb-2">
               학번
             </label>
             <input
@@ -155,10 +155,10 @@ export default function SignUpWrapper() {
               value={formData.studentId}
               onChange={(e) => handleChange("studentId", e.target.value)}
               placeholder="학번을 입력하세요"
-              className={`w-full h-[56px] px-4 bg-white border rounded-[8px] font-['Public_Sans'] text-[16px] text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 transition-all ${
+              className={`w-full h-[52px] px-4 bg-unibus-surface border rounded-[12px] text-[16px] text-unibus-text placeholder:text-unibus-muted focus:outline-none focus:ring-2 transition-all ${
                 errors.studentId
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                  : "border-[#cbd5e1] focus:border-[#1e3b8a] focus:ring-[#1e3b8a]/20"
+                  : "border-unibus-divider focus:border-unibus-brand focus:ring-unibus-brand/20"
               }`}
             />
             {errors.studentId && (
@@ -167,7 +167,7 @@ export default function SignUpWrapper() {
           </div>
 
           <div>
-            <label className="font-['Public_Sans'] font-semibold text-[#0f172a] text-[14px] leading-[21px] block mb-2">
+            <label className="font-semibold text-unibus-text text-[14px] leading-[21px] block mb-2">
               이메일
             </label>
             <input
@@ -175,10 +175,10 @@ export default function SignUpWrapper() {
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
               placeholder="student@sch.ac.kr"
-              className={`w-full h-[56px] px-4 bg-white border rounded-[8px] font-['Public_Sans'] text-[16px] text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 transition-all ${
+              className={`w-full h-[52px] px-4 bg-unibus-surface border rounded-[12px] text-[16px] text-unibus-text placeholder:text-unibus-muted focus:outline-none focus:ring-2 transition-all ${
                 errors.email
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                  : "border-[#cbd5e1] focus:border-[#1e3b8a] focus:ring-[#1e3b8a]/20"
+                  : "border-unibus-divider focus:border-unibus-brand focus:ring-unibus-brand/20"
               }`}
             />
             {errors.email && (
@@ -187,7 +187,7 @@ export default function SignUpWrapper() {
           </div>
 
           <div>
-            <label className="font-['Public_Sans'] font-semibold text-[#0f172a] text-[14px] leading-[21px] block mb-2">
+            <label className="font-semibold text-unibus-text text-[14px] leading-[21px] block mb-2">
               비밀번호
             </label>
             <input
@@ -195,10 +195,10 @@ export default function SignUpWrapper() {
               value={formData.password}
               onChange={(e) => handleChange("password", e.target.value)}
               placeholder="비밀번호를 입력하세요"
-              className={`w-full h-[56px] px-4 bg-white border rounded-[8px] font-['Public_Sans'] text-[16px] text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 transition-all ${
+              className={`w-full h-[52px] px-4 bg-unibus-surface border rounded-[12px] text-[16px] text-unibus-text placeholder:text-unibus-muted focus:outline-none focus:ring-2 transition-all ${
                 errors.password
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                  : "border-[#cbd5e1] focus:border-[#1e3b8a] focus:ring-[#1e3b8a]/20"
+                  : "border-unibus-divider focus:border-unibus-brand focus:ring-unibus-brand/20"
               }`}
             />
             {errors.password && (
@@ -207,7 +207,7 @@ export default function SignUpWrapper() {
           </div>
 
           <div>
-            <label className="font-['Public_Sans'] font-semibold text-[#0f172a] text-[14px] leading-[21px] block mb-2">
+            <label className="font-semibold text-unibus-text text-[14px] leading-[21px] block mb-2">
               비밀번호 확인
             </label>
             <input
@@ -215,10 +215,10 @@ export default function SignUpWrapper() {
               value={formData.confirmPassword}
               onChange={(e) => handleChange("confirmPassword", e.target.value)}
               placeholder="비밀번호를 다시 입력하세요"
-              className={`w-full h-[56px] px-4 bg-white border rounded-[8px] font-['Public_Sans'] text-[16px] text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 transition-all ${
+              className={`w-full h-[52px] px-4 bg-unibus-surface border rounded-[12px] text-[16px] text-unibus-text placeholder:text-unibus-muted focus:outline-none focus:ring-2 transition-all ${
                 errors.confirmPassword
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                  : "border-[#cbd5e1] focus:border-[#1e3b8a] focus:ring-[#1e3b8a]/20"
+                  : "border-unibus-divider focus:border-unibus-brand focus:ring-unibus-brand/20"
               }`}
             />
             {errors.confirmPassword && (
@@ -230,19 +230,19 @@ export default function SignUpWrapper() {
         {/* Submit Button */}
         <button
           onClick={handleSubmit}
-          className="w-full bg-[#1e3a8a] h-[56px] rounded-[12px] font-['Public_Sans'] font-bold text-white text-[16px] shadow-[0px_10px_15px_-3px_rgba(30,59,138,0.2),0px_4px_6px_-4px_rgba(30,59,138,0.2)] hover:bg-[#1e3a8a]/90 active:scale-[0.98] transition-all mb-4"
+          className="w-full bg-unibus-brand h-[52px] rounded-[12px] font-semibold text-unibus-brand-foreground text-[16px] hover:bg-unibus-brand/90 active:scale-[0.98] transition-all mb-4"
         >
           {loading ? "처리 중..." : "회원가입"}
         </button>
 
         {/* Login Link */}
         <div className="flex gap-1 items-center justify-center">
-          <p className="font-['Public_Sans'] font-normal text-[#475569] text-[14px] leading-[20px]">
+          <p className="font-normal text-unibus-muted text-[14px] leading-[20px]">
             이미 계정이 있으신가요?
           </p>
           <button
             onClick={() => navigate("/login")}
-            className="font-['Public_Sans'] font-bold text-[#0f172a] text-[14px] leading-[20px] hover:text-[#1e3b8a] transition-colors"
+            className="font-semibold text-unibus-text text-[14px] leading-[20px] hover:text-unibus-brand transition-colors"
           >
             로그인
           </button>

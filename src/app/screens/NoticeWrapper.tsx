@@ -15,11 +15,11 @@ import {
 type NoticeCategoryFilter = "all" | Notice["category"];
 
 const CATEGORY_FILTERS = [
-  { id: "all", labelKo: "전체", labelEn: "All", activeClass: "bg-[#1e3a8a]" },
-  { id: "route", labelKo: "운행정보", labelEn: "Route", activeClass: "bg-[#3b82f6]" },
-  { id: "general", labelKo: "일반", labelEn: "General", activeClass: "bg-[#10b981]" },
-  { id: "system", labelKo: "시스템", labelEn: "System", activeClass: "bg-[#f59e0b]" },
-  { id: "lost", labelKo: "분실물", labelEn: "Lost & Found", activeClass: "bg-[#f97316]" },
+  { id: "all", labelKo: "전체", labelEn: "All", activeClass: "bg-unibus-brand" },
+  { id: "route", labelKo: "운행정보", labelEn: "Route", activeClass: "bg-unibus-brand" },
+  { id: "general", labelKo: "일반", labelEn: "General", activeClass: "bg-unibus-brand" },
+  { id: "system", labelKo: "시스템", labelEn: "System", activeClass: "bg-unibus-brand" },
+  { id: "lost", labelKo: "분실물", labelEn: "Lost & Found", activeClass: "bg-unibus-brand" },
 ] satisfies Array<{
   id: NoticeCategoryFilter;
   labelKo: string;
@@ -27,12 +27,6 @@ const CATEGORY_FILTERS = [
   activeClass: string;
 }>;
 
-const CATEGORY_STYLES: Record<Notice["category"], string> = {
-  route: "bg-[#3b82f6] text-white",
-  system: "bg-[#f59e0b] text-white",
-  general: "bg-[#10b981] text-white",
-  lost: "bg-[#f97316] text-white",
-};
 
 const listContainer = {
   hidden: { opacity: 0 },
@@ -130,7 +124,7 @@ export default function NoticeWrapper() {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(language === "ko" ? "ko-KR" : "en-US", {
-      year: "numeric",
+      year: date.getFullYear() === new Date().getFullYear() ? undefined : "numeric",
       month: "short",
       day: "numeric",
     });
@@ -166,36 +160,34 @@ export default function NoticeWrapper() {
   };
 
   return (
-    <div className="bg-[#f6f6f8] content-stretch flex flex-col items-start relative size-full">
-      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-hidden bg-white">
+    <div className="font-['Public_Sans'] bg-background content-stretch flex flex-col items-start relative size-full">
+      <div className="relative flex h-full w-full shrink-0 flex-col items-start overflow-hidden bg-unibus-surface">
         <div className="sticky top-0 z-30 w-full pt-safe">
-          <div className="flex w-full items-center justify-between bg-[rgba(255,255,255,0.9)] px-[16px] pb-[12px] pt-[16px] backdrop-blur-[10px]">
+          <div className="flex w-full items-center justify-between bg-unibus-surface/95 px-[16px] pb-[12px] pt-[16px] backdrop-blur-[10px]">
             <motion.button
               type="button"
               onClick={() => navigate("/home")}
               whileTap={reduceMotion ? undefined : { scale: 0.92 }}
               aria-label={t("홈으로 돌아가기", "Back to home")}
-              className="flex size-[40px] items-center justify-center rounded-full outline-none transition-colors hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/50 focus-visible:ring-offset-2"
+              className="flex size-[40px] items-center justify-center rounded-full outline-none transition-colors hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-unibus-brand/50 focus-visible:ring-offset-2"
             >
-              <svg aria-hidden="true" className="h-5 w-3 text-[#0f172a]" fill="none" viewBox="0 0 12 20" stroke="currentColor" strokeWidth="2">
+              <svg aria-hidden="true" className="h-5 w-3 text-unibus-text" fill="none" viewBox="0 0 12 20" stroke="currentColor" strokeWidth="2">
                 <path d="M11 1L1 10L11 19" />
               </svg>
             </motion.button>
 
             <div className="flex flex-col items-center">
-              <p className="font-['Public_Sans'] text-[18px] font-bold leading-[22.5px] text-[#0f172a]">
+              <p className="text-[18px] font-bold leading-[22.5px] text-unibus-text">
                 {t("공지사항", "Notice")}
               </p>
-              <p className="font-['Public_Sans'] text-[10px] font-bold uppercase leading-[15px] tracking-[1px] text-[#1e3a8a]">
-                {t("업데이트 및 공지", "Updates & Announcements")}
-              </p>
+
             </div>
 
             <div className="w-[40px]" />
           </div>
 
           <div
-            className="flex gap-2 overflow-x-auto border-b border-[#f1f5f9] px-[16px] py-[12px] scrollbar-hide"
+            className="flex gap-2 overflow-x-auto border-b border-unibus-divider px-[16px] py-[12px] scrollbar-hide"
             role="group"
             aria-label={t("공지 카테고리", "Notice category")}
           >
@@ -208,15 +200,15 @@ export default function NoticeWrapper() {
                   aria-pressed={selected}
                   onClick={() => selectCategory(filter.id)}
                   whileTap={reduceMotion ? undefined : { scale: 0.96 }}
-                  className={`relative isolate whitespace-nowrap rounded-full px-4 py-2 font-['Public_Sans'] text-[12px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/50 focus-visible:ring-offset-2 ${
-                    selected ? "text-white" : "bg-[#f1f5f9] text-[#64748b] hover:bg-[#e2e8f0]"
+                  className={`unibus-filter relative isolate whitespace-nowrap rounded-xl px-4 py-2 text-[13px] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-unibus-brand/50 focus-visible:ring-offset-2 ${
+                    selected ? "text-unibus-brand-foreground" : "bg-unibus-surface-subtle text-unibus-muted hover:bg-unibus-divider"
                   }`}
                 >
                   {selected ? (
                     <motion.span
                       layoutId={reduceMotion ? undefined : "notice-category-pill"}
                       aria-hidden="true"
-                      className={`absolute inset-0 -z-10 rounded-full shadow-[0_5px_14px_rgba(15,23,42,0.14)] ${filter.activeClass}`}
+                      className={`absolute inset-0 -z-10 rounded-xl  ${filter.activeClass}`}
                       transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.75 }}
                     />
                   ) : null}
@@ -257,15 +249,15 @@ export default function NoticeWrapper() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z" />
                 </svg>
               </div>
-              <p className="mb-1 font-['Public_Sans'] text-[16px] font-bold text-[#0f172a]">
+              <p className="mb-1 text-[16px] font-bold text-unibus-text">
                 {t("불러오기 실패", "Failed to load")}
               </p>
-              <p className="mb-4 font-['Public_Sans'] text-[14px] font-normal text-[#94a3b8]">{error}</p>
+              <p className="mb-4 text-[14px] font-normal text-unibus-muted">{error}</p>
               <motion.button
                 type="button"
                 onClick={() => void loadNotices()}
                 whileTap={reduceMotion ? undefined : { scale: 0.96 }}
-                className="rounded-full bg-[#1e3a8a] px-6 py-2 font-['Public_Sans'] text-[14px] font-semibold text-white outline-none transition-colors hover:bg-[#1e40af] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/50 focus-visible:ring-offset-2"
+                className="rounded-full bg-unibus-brand px-6 py-2 text-[14px] font-semibold text-unibus-brand-foreground outline-none transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-unibus-brand/50 focus-visible:ring-offset-2"
               >
                 {t("다시 시도", "Retry")}
               </motion.button>
@@ -292,8 +284,8 @@ export default function NoticeWrapper() {
                         key={notice.id}
                         variants={listItem}
                         layout={reduceMotion ? false : "position"}
-                        className={`overflow-hidden rounded-[16px] border bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)] transition-[border-color,box-shadow] hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] ${
-                          unread ? "border-[#bfdbfe]" : "border-[#e2e8f0]"
+                        className={`unibus-notice-card overflow-hidden rounded-[16px] border bg-unibus-surface transition-[border-color,box-shadow] ${
+                          expanded || unread ? "border-unibus-brand-border border-s-unibus-brand" : "border-unibus-divider"
                         }`}
                       >
                         <motion.button
@@ -307,41 +299,20 @@ export default function NoticeWrapper() {
                         >
                           <span className="flex items-start justify-between gap-3">
                             <span className="min-w-0 flex-1">
-                              <span className="mb-1.5 flex flex-wrap items-center gap-2">
-                                <span className={`rounded-[5px] px-2 py-1 font-['Public_Sans'] text-[10px] font-bold uppercase ${CATEGORY_STYLES[notice.category]}`}>
-                                  {getCategoryLabel(notice.category)}
-                                </span>
-                                {isNew(notice.createdAt) ? (
-                                  <span className="rounded-[5px] bg-[#ef4444] px-2 py-1 font-['Public_Sans'] text-[10px] font-bold uppercase text-white">
-                                    NEW
-                                  </span>
-                                ) : null}
-                                <AnimatePresence initial={false}>
-                                  {unread ? (
-                                    <motion.span
-                                      initial={reduceMotion ? false : { opacity: 0, scale: 0.6 }}
-                                      animate={{ opacity: 1, scale: 1 }}
-                                      exit={{ opacity: 0, scale: 0.6 }}
-                                      className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[#1e3a8a]"
-                                    >
-                                      <span aria-hidden="true" className="size-1.5 rounded-full bg-[#3b82f6]" />
-                                      {t("읽지 않음", "Unread")}
-                                    </motion.span>
-                                  ) : null}
-                                </AnimatePresence>
-                              </span>
-                              <span className="mb-1 block font-['Public_Sans'] text-[16px] font-bold leading-[24px] text-[#0f172a]">
-                                {notice.title}
-                              </span>
-                              <span className="block font-['Public_Sans'] text-[12px] font-normal leading-[16px] text-[#94a3b8]">
-                                {formatDate(notice.createdAt)}
+                              <span className="block break-keep [overflow-wrap:anywhere] text-[16px] font-semibold leading-6 text-unibus-text">{notice.title}</span>
+                              <span className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-normal leading-5 text-unibus-muted">
+                                <span className="rounded-md bg-unibus-brand-soft px-1.5 text-[12px] font-medium text-unibus-brand">{getCategoryLabel(notice.category)}</span>
+                                <span aria-hidden="true">·</span>
+                                <time dateTime={notice.createdAt}>{formatDate(notice.createdAt)}</time>
+                                {isNew(notice.createdAt) ? <span className="text-[12px] font-medium text-unibus-brand">{t("새 글", "New")}</span> : null}
+                                {unread ? <span className="sr-only">{t("읽지 않음", "Unread")}</span> : null}
                               </span>
                             </span>
                             <motion.span
                               aria-hidden="true"
                               animate={{ rotate: expanded ? 180 : 0, y: expanded ? 1 : 0 }}
                               transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 440, damping: 32 }}
-                              className="mt-1 grid size-8 shrink-0 place-items-center rounded-full bg-[#f1f5f9] text-[#64748b]"
+                              className="mt-1 grid size-8 shrink-0 place-items-center rounded-full bg-unibus-surface-subtle text-unibus-muted"
                             >
                               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -367,8 +338,8 @@ export default function NoticeWrapper() {
                                   }}
                               className="overflow-hidden"
                             >
-                              <div className="mx-[16px] border-t border-[#f1f5f9] pb-[16px] pt-[14px]">
-                                <p className="whitespace-pre-line font-['Public_Sans'] text-[15px] font-medium leading-[26px] text-[#0f172a]">
+                              <div className="mx-[16px] border-t border-unibus-divider pb-[16px] pt-[14px]">
+                                <p className="whitespace-pre-line text-[15px] font-medium leading-[26px] text-unibus-text">
                                   {notice.content}
                                 </p>
                                 {notice.imageUrls && notice.imageUrls.length > 0 ? (
@@ -379,7 +350,7 @@ export default function NoticeWrapper() {
                                         type="button"
                                         onClick={() => setLightboxImage(url)}
                                         whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-                                        className="overflow-hidden rounded-lg border border-[#e2e8f0] outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/50 focus-visible:ring-offset-2"
+                                        className="overflow-hidden rounded-lg border border-unibus-divider outline-none focus-visible:ring-2 focus-visible:ring-unibus-brand/50 focus-visible:ring-offset-2"
                                       >
                                         <img
                                           src={url}
@@ -392,7 +363,7 @@ export default function NoticeWrapper() {
                                   </div>
                                 ) : null}
                                 {notice.contentBelow ? (
-                                  <p className="mt-3 whitespace-pre-line font-['Public_Sans'] text-[14px] font-normal leading-[22px] text-[#475569]">
+                                  <p className="mt-3 whitespace-pre-line text-[14px] font-normal leading-[22px] text-unibus-muted">
                                     {notice.contentBelow}
                                   </p>
                                 ) : null}
@@ -411,15 +382,15 @@ export default function NoticeWrapper() {
                   animate={{ opacity: 1, y: 0 }}
                   className="flex flex-col items-center justify-center py-12 text-center"
                 >
-                  <div className="mb-4 rounded-full bg-[#f1f5f9] p-6">
-                    <svg aria-hidden="true" className="h-12 w-12 text-[#94a3b8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="mb-4 rounded-full bg-unibus-surface-subtle p-6">
+                    <svg aria-hidden="true" className="h-12 w-12 text-unibus-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
                   </div>
-                  <p className="mb-1 font-['Public_Sans'] text-[16px] font-bold text-[#0f172a]">
+                  <p className="mb-1 text-[16px] font-bold text-unibus-text">
                     {t("공지사항 없음", "No notices")}
                   </p>
-                  <p className="font-['Public_Sans'] text-[14px] font-normal text-[#94a3b8]">
+                  <p className="text-[14px] font-normal text-unibus-muted">
                     {t("현재 공지사항이 없습니다", "No notices at the moment")}
                   </p>
                 </motion.div>
