@@ -226,6 +226,14 @@ class ApiClient {
     throw new Error(data.error || 'Login failed');
   }
 
+  async exhibitionLogin(): Promise<{ token: string; user: User }> {
+    const data = await this.authRequest<ApiResponse>('/auth/exhibition', { method: 'POST' });
+    if (!data.success || !data.token || data.user?.role !== 'user') {
+      throw new Error('Exhibition login unavailable');
+    }
+    return { token: data.token, user: data.user };
+  }
+
   async kakaoLogin(kakaoId: string, accessToken: string, email?: string, name?: string, profileImage?: string): Promise<{ token: string; user: User }> {
     const data = await this.authRequest<ApiResponse>('/auth/kakao', {
       method: 'POST',

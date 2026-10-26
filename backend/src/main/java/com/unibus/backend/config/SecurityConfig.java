@@ -50,6 +50,7 @@ public class SecurityConfig {
                     HttpMethod.POST,
                     "/auth/signup",
                     "/auth/login",
+                    "/auth/exhibition",
                     "/auth/kakao",
                     "/auth/logout"
                 ).permitAll()

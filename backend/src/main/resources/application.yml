@@ -46,6 +46,8 @@ management:
       show-details: never
 
 app:
+  exhibition:
+    enabled: ${UNIBUS_EXHIBITION_ENABLED:false}
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,https://unibus-sch.vercel.app,https://unibus-sch-two.vercel.app}
     allowed-origin-patterns: ${APP_CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:*,http://127.0.0.1:*,https://unibus-sch-git-*-ddingddong9s-projects.vercel.app,https://unibus-sch-*-ddingddong9s-projects.vercel.app,https://unibus-*-ddingddong9s-projects.vercel.app}

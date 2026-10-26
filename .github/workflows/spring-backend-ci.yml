@@ -72,6 +72,7 @@ jobs:
       - name: Verify environment and staging smoke contracts
         run: |
           npm run test:env
+          npm run test:exhibition
           npm run test:staging-smoke
           npm run typecheck
 

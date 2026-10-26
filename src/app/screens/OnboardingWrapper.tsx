@@ -2,7 +2,7 @@ import { BusFront, ChevronRight, MapPinned, Bell } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useLanguage } from "../contexts/LanguageContext";
 
-export default function OnboardingWrapper() {
+export default function OnboardingWrapper({ exhibition = false }: { exhibition?: boolean }) {
   const navigate = useNavigate();
   const { t } = useLanguage();
   return (
@@ -12,7 +12,7 @@ export default function OnboardingWrapper() {
           <span className="flex items-center gap-2 text-[17px] font-semibold tracking-tight text-unibus-text">
             <BusFront className="size-6 text-unibus-brand" strokeWidth={1.75} aria-hidden="true" /> UNIBUS
           </span>
-          <button type="button" onClick={() => navigate("/login")} className="min-h-11 rounded-lg px-2 text-[14px] font-medium text-unibus-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)]">
+          <button type="button" onClick={() => navigate(exhibition ? "/exhibition/login" : "/login")} className="min-h-11 rounded-lg px-2 text-[14px] font-medium text-unibus-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--unibus-focus)]">
             {t("로그인", "Log in")}
           </button>
         </header>
@@ -22,7 +22,7 @@ export default function OnboardingWrapper() {
             {t("기다림은 짧게,", "Less waiting,")}<br />{t("이동은 가볍게.", "easier journeys.")}
           </h1>
           <p className="mt-3 text-[15px] leading-6 text-unibus-muted">{t("버스 위치와 도착 시간을 한눈에.", "Bus locations and arrivals at a glance.")}</p>
-          <button type="button" onClick={() => navigate("/signup")} className="unibus-primary-button mt-6 w-full">
+          <button type="button" onClick={() => navigate(exhibition ? "/exhibition/signup" : "/signup")} className="unibus-primary-button mt-6 w-full">
             {t("시작하기", "Get started")} <ChevronRight className="size-[18px]" aria-hidden="true" />
           </button>
           <div className="unibus-card unibus-route-preview mt-8 px-4 py-5">

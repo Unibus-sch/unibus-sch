@@ -1,3 +1,4 @@
+import { exhibitionAccount } from "../services/exhibition";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import svgPaths from "../../imports/svg-9blebrmjt8";
@@ -5,11 +6,11 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
 import { api } from "../services/api";
 
-export default function SignUpWrapper() {
+export default function SignUpWrapper({ exhibition = false }: { exhibition?: boolean }) {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { login } = useAuth();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(exhibition ? exhibitionAccount : {
     name: "",
     studentId: "",
     email: "",
@@ -47,7 +48,11 @@ export default function SignUpWrapper() {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    if (exhibition) {
+      navigate("/exhibition/login");
+      return;
+    }
+    if (loading || !validateForm()) return;
 
     setLoading(true);
     try {
@@ -73,6 +78,7 @@ export default function SignUpWrapper() {
   };
 
   const handleChange = (field: string, value: string) => {
+    if (exhibition) return;
     setFormData({ ...formData, [field]: value });
     // Clear error for this field when user starts typing
     if (errors[field]) {
@@ -88,7 +94,7 @@ export default function SignUpWrapper() {
           <button
             type="button"
             aria-label={t("로그인으로 돌아가기", "Back to login")}
-            onClick={() => navigate("/login")}
+            onClick={() => navigate(exhibition ? "/exhibition/login" : "/login")}
             className="flex items-center justify-center size-[40px] hover:bg-gray-100 rounded-full active:scale-95 transition-all"
           >
             <svg className="w-3 h-5" fill="none" viewBox="0 0 12 20" stroke="currentColor" strokeWidth="2">
@@ -131,7 +137,10 @@ export default function SignUpWrapper() {
               이름
             </label>
             <input
+              readOnly={exhibition}
+              autoComplete={exhibition ? "off" : undefined}
               type="text"
+              aria-label="이름"
               value={formData.name}
               onChange={(e) => handleChange("name", e.target.value)}
               placeholder="이름을 입력하세요"
@@ -151,7 +160,10 @@ export default function SignUpWrapper() {
               학번
             </label>
             <input
+              readOnly={exhibition}
+              autoComplete={exhibition ? "off" : undefined}
               type="text"
+              aria-label="학번"
               value={formData.studentId}
               onChange={(e) => handleChange("studentId", e.target.value)}
               placeholder="학번을 입력하세요"
@@ -171,7 +183,10 @@ export default function SignUpWrapper() {
               이메일
             </label>
             <input
+              readOnly={exhibition}
+              autoComplete={exhibition ? "off" : undefined}
               type="email"
+              aria-label="이메일"
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
               placeholder="student@sch.ac.kr"
@@ -191,7 +206,10 @@ export default function SignUpWrapper() {
               비밀번호
             </label>
             <input
+              readOnly={exhibition}
+              autoComplete={exhibition ? "off" : undefined}
               type="password"
+              aria-label="비밀번호"
               value={formData.password}
               onChange={(e) => handleChange("password", e.target.value)}
               placeholder="비밀번호를 입력하세요"
@@ -211,7 +229,10 @@ export default function SignUpWrapper() {
               비밀번호 확인
             </label>
             <input
+              readOnly={exhibition}
+              autoComplete={exhibition ? "off" : undefined}
               type="password"
+              aria-label="비밀번호 확인"
               value={formData.confirmPassword}
               onChange={(e) => handleChange("confirmPassword", e.target.value)}
               placeholder="비밀번호를 다시 입력하세요"
@@ -230,6 +251,7 @@ export default function SignUpWrapper() {
         {/* Submit Button */}
         <button
           onClick={handleSubmit}
+          disabled={loading}
           className="w-full bg-unibus-brand h-[52px] rounded-[12px] font-semibold text-unibus-brand-foreground text-[16px] hover:bg-unibus-brand/90 active:scale-[0.98] transition-all mb-4"
         >
           {loading ? "처리 중..." : "회원가입"}
@@ -241,7 +263,7 @@ export default function SignUpWrapper() {
             이미 계정이 있으신가요?
           </p>
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => navigate(exhibition ? "/exhibition/login" : "/login")}
             className="font-semibold text-unibus-text text-[14px] leading-[20px] hover:text-unibus-brand transition-colors"
           >
             로그인

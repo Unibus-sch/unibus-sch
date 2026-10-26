@@ -47,6 +47,9 @@ class AuthService {
         requestRateLimiter.enforce("auth-signup", requestIdentity, 30, 3_600);
 
         String normalizedEmail = email.trim().toLowerCase(Locale.ROOT);
+        if (ExhibitionService.EMAIL.equals(normalizedEmail)) {
+            throw badRequest("Email is reserved");
+        }
         String trimmedName = name.trim();
         if (normalizedEmail.length() > 254 || !EMAIL_PATTERN.matcher(normalizedEmail).matches()) {
             throw badRequest("Invalid email format");

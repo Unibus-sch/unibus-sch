@@ -1,3 +1,4 @@
+import { exhibitionAccount } from "../services/exhibition";
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router";
 import svgPaths from "../../imports/svg-9blebrmjt8";
@@ -6,21 +7,22 @@ import { useAuth } from "../contexts/AuthContext";
 import { api } from "../services/api";
 import { kakaoService } from "../services/kakao";
 
-export default function LoginWrapper() {
+export default function LoginWrapper({ exhibition = false }: { exhibition?: boolean }) {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { login, isAuthenticated, isLoading } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(exhibition ? exhibitionAccount.email : "");
+  const [password, setPassword] = useState(exhibition ? exhibitionAccount.password : "");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (!isLoading && isAuthenticated) {
+  if (!exhibition && !isLoading && isAuthenticated) {
     return <Navigate to="/home" replace />;
   }
 
   const handleLogin = async () => {
+    if (loading) return;
     setError("");
     if (!email.trim()) {
       setError(t("이메일을 입력해주세요", "Please enter your email"));
@@ -32,7 +34,7 @@ export default function LoginWrapper() {
     }
     setLoading(true);
     try {
-      const result = await api.login(email, password);
+      const result = exhibition ? await api.exhibitionLogin() : await api.login(email, password);
       login(result.token, result.user);
       if (result.user.role === 'driver') {
         navigate("/driver");
@@ -40,7 +42,9 @@ export default function LoginWrapper() {
         navigate("/home");
       }
     } catch {
-      setError(t("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.", "Login failed. Please check your email and password."));
+      setError(exhibition
+        ? t("로그인에 실패했습니다. 잠시 후 다시 시도해 주세요.", "Login failed. Please try again shortly.")
+        : t("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.", "Login failed. Please check your email and password."));
     } finally {
       setLoading(false);
     }
@@ -132,7 +136,10 @@ export default function LoginWrapper() {
                 <input
                   type="text"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  readOnly={exhibition}
+                  autoComplete={exhibition ? "off" : "email"}
+                  aria-label={t("이메일", "Email")}
+                  onChange={(e) => { if (!exhibition) setEmail(e.target.value); }}
                   onKeyPress={handleKeyPress}
                   placeholder={t("이메일을 입력하세요", "Enter your email")}
                   className="w-full h-[52px] px-4 bg-unibus-surface border border-unibus-divider rounded-[12px] text-[16px] text-unibus-text placeholder:text-unibus-muted focus:outline-none focus:border-unibus-brand focus:ring-2 focus:ring-unibus-brand/20 transition-all"
@@ -146,15 +153,18 @@ export default function LoginWrapper() {
                 <div className="flex flex-col font-semibold justify-center leading-[0] not-italic relative shrink-0 text-unibus-text text-[14px]">
                   <p className="leading-[21px]">{t("비밀번호", "Password")}</p>
                 </div>
-                <button className="flex flex-col font-semibold justify-center leading-[0] not-italic relative shrink-0 text-unibus-brand text-[13px]">
+                {!exhibition && <button className="flex flex-col font-semibold justify-center leading-[0] not-italic relative shrink-0 text-unibus-brand text-[13px]">
                   <p className="leading-[16px]">{t("비밀번호를 잊으셨나요?", "Forgot?")}</p>
-                </button>
+                </button>}
               </div>
               <div className="relative w-full">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  readOnly={exhibition}
+                  autoComplete={exhibition ? "off" : "current-password"}
+                  aria-label={t("비밀번호", "Password")}
+                  onChange={(e) => { if (!exhibition) setPassword(e.target.value); }}
                   onKeyPress={handleKeyPress}
                   placeholder={t("비밀번호를 입력하세요", "Enter your password")}
                   className="w-full h-[52px] px-4 bg-unibus-surface border border-unibus-divider rounded-[12px] text-[16px] text-unibus-text placeholder:text-unibus-muted focus:outline-none focus:border-unibus-brand focus:ring-2 focus:ring-unibus-brand/20 transition-all"
@@ -181,6 +191,7 @@ export default function LoginWrapper() {
           <div className="onboard-reveal content-stretch flex flex-col items-start pt-[28px] relative shrink-0 w-full [animation-delay:160ms]">
             <button
               onClick={handleLogin}
+              disabled={loading}
               className="bg-unibus-brand content-stretch flex gap-[8px] h-[52px] items-center justify-center relative rounded-[12px] shrink-0 w-full hover:bg-unibus-brand/90 transition-colors active:scale-[0.97]"
             >
               <div className="flex flex-col font-semibold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-unibus-brand-foreground">
@@ -198,7 +209,7 @@ export default function LoginWrapper() {
 
           {/* Social Login */}
           <div className="onboard-reveal content-stretch flex flex-col items-start pt-[32px] relative shrink-0 w-full [animation-delay:200ms]">
-            <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
+            {!exhibition && <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
               <div className="content-stretch flex items-center py-[16px] relative shrink-0 w-full">
                 <div className="flex-[1_0_0] h-px min-h-px min-w-px relative border-t border-unibus-divider" />
                 <div className="content-stretch flex flex-col items-start px-[16px] relative shrink-0">
@@ -221,7 +232,7 @@ export default function LoginWrapper() {
                   {t("카카오로 로그인", "Continue with Kakao")}
                 </div>
               </button>
-            </div>
+            </div>}
           </div>
 
           {/* Sign Up Link */}
@@ -231,7 +242,7 @@ export default function LoginWrapper() {
                 <p className="leading-[20px]">{t("계정이 없으신가요?", "Don't have an account?")}</p>
               </div>
               <button
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate(exhibition ? "/exhibition/signup" : "/signup")}
                 className="flex flex-col font-semibold justify-center leading-[0] relative shrink-0 text-unibus-text text-[14px] text-center hover:text-unibus-brand transition-colors"
               >
                 <p className="leading-[20px]">{t("회원가입", "Sign Up")}</p>

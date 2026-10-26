@@ -2,7 +2,7 @@ import { Suspense, useEffect } from "react";
 import { useLocation, Outlet } from "react-router-dom";
 import BottomNav from "./BottomNav";
 
-const AUTH_ROUTES = new Set(["/", "/onboarding", "/login", "/signup"]);
+const AUTH_ROUTES = new Set(["/", "/onboarding", "/login", "/signup", "/exhibition", "/exhibition/signup", "/exhibition/login"]);
 const TAB_ROUTES = new Set(["/home", "/campus-shuttle", "/shuttle", "/commuter-bus", "/notice", "/settings"]);
 
 function getTransitionClass(pathname: string) {

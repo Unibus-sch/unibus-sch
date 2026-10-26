@@ -6,10 +6,14 @@ import java.time.ZoneOffset;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 class SessionService {
+
+    @Value("${app.exhibition.enabled:false}")
+    private boolean exhibitionEnabled;
 
     private final AuthRepository authRepository;
     private final SessionTokenCodec tokenCodec;
@@ -24,7 +28,8 @@ class SessionService {
     IssuedSession issue(AuthRepository.UserRecord user) {
         String rawToken = tokenCodec.create();
         String tokenHash = tokenCodec.hash(rawToken);
-        OffsetDateTime expiresAt = OffsetDateTime.now(clock).plusDays(30);
+        OffsetDateTime expiresAt = user.id().equals(ExhibitionService.USER_ID)
+            ? OffsetDateTime.now(clock).plusHours(4) : OffsetDateTime.now(clock).plusDays(30);
         authRepository.insertSession(user.id(), tokenHash, expiresAt);
         return new IssuedSession(rawToken, expiresAt);
     }
@@ -54,6 +59,9 @@ class SessionService {
         }
 
         return authRepository.findById(current.userId())
+            .filter(user -> !user.id().equals(ExhibitionService.USER_ID)
+                || (exhibitionEnabled && "user".equals(user.role())
+                    && ExhibitionService.EMAIL.equals(user.email()) && user.passwordHash() == null))
             .map(SessionValidation::valid)
             .orElseGet(SessionValidation::invalid);
     }

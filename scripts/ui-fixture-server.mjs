@@ -19,7 +19,9 @@ const server = createServer(async (req, res) => {
   if (req.method === 'OPTIONS') {res.writeHead(204);res.end();return;}
   const path = new URL(req.url, 'http://127.0.0.1').pathname;
   let response;
-  if (path === '/auth/login' && req.method === 'POST') {
+  if (path === '/auth/exhibition' && req.method === 'POST') {
+    response={success:true,token:'local-ui-layout-token',user:{id:'e0000000-0000-4000-8000-000000000026',name:'방문객',email:'visitor@unibus.example',studentId:'20260000',role:'user'}};
+  } else if (path === '/auth/login' && req.method === 'POST') {
     let body='';for await (const chunk of req) {body+=chunk;if(body.length>4096){res.writeHead(413);res.end();return;}}
     try {
       const login = JSON.parse(body);

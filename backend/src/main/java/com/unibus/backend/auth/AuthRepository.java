@@ -52,6 +52,14 @@ class AuthRepository {
             """, (resultSet, rowNumber) -> mapUser(resultSet), email, passwordHash, name, studentId);
     }
 
+    void ensureExhibitionUser() {
+        jdbcTemplate.update("""
+            INSERT INTO users (id, email, name, student_id, role, provider)
+            VALUES (?, ?, '방문객', '20260000', 'user', 'local')
+            ON CONFLICT DO NOTHING
+            """, ExhibitionService.USER_ID, ExhibitionService.EMAIL);
+    }
+
     Optional<UserRecord> findKakaoUser(String providerId) {
         return jdbcTemplate.query(
             "SELECT " + USER_COLUMNS + " FROM users WHERE provider = 'kakao' AND provider_id = ?",

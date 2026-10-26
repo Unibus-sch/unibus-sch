@@ -68,6 +68,7 @@ jobs:
         run: |
           npm ci
           npm run test:env
+          npm run test:exhibition
           npm run test:staging-smoke
           npm run typecheck
           npm run lint

@@ -19,9 +19,11 @@ public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final AuthService authService;
+    private final ExhibitionService exhibitionService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, ExhibitionService exhibitionService) {
         this.authService = authService;
+        this.exhibitionService = exhibitionService;
     }
 
     @PostMapping("/signup")
@@ -56,6 +58,21 @@ public class AuthController {
             return rateLimited(error);
         } catch (RuntimeException error) {
             log.error("Login failed", error);
+            return ResponseEntity.internalServerError().body(ApiResponse.error("Login failed"));
+        }
+    }
+
+    @PostMapping("/exhibition")
+    ResponseEntity<?> exhibition(HttpServletRequest request) {
+        try {
+            return ResponseEntity.ok().header("Cache-Control", "no-store")
+                .body(exhibitionService.login(requestIdentity(request)));
+        } catch (AuthRequestException error) {
+            return ResponseEntity.status(error.status()).body(ApiResponse.error(error.getMessage()));
+        } catch (RateLimitExceededException error) {
+            return rateLimited(error);
+        } catch (RuntimeException error) {
+            log.error("Exhibition login failed", error);
             return ResponseEntity.internalServerError().body(ApiResponse.error("Login failed"));
         }
     }

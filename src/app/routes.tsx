@@ -1,3 +1,4 @@
+import { exhibitionRootEnabled } from "./services/exhibition";
 import { lazy } from "react";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import SplashScreen from "../imports/SplashScreen";
@@ -47,12 +48,16 @@ export const router = createBrowserRouter([
       // 스플래시
       {
         path: "/",
-        element: (
+        element: exhibitionRootEnabled ? <Navigate to="/exhibition" replace /> : (
           <Layout autoNavigate={{ to: "/onboarding", delay: 2500, ifAuthenticated: "/home" }}>
             <SplashScreen />
           </Layout>
         ),
       },
+      // QR exhibition flow uses separate screens; ordinary authentication stays editable.
+      { path: "/exhibition", element: <OnboardingWrapper exhibition /> },
+      { path: "/exhibition/signup", element: <SignUpWrapper exhibition /> },
+      { path: "/exhibition/login", element: <LoginWrapper exhibition /> },
       // 인증 화면 (공개)
       { path: "/onboarding", element: <OnboardingWrapper /> },
       { path: "/login",      element: <LoginWrapper /> },

@@ -59,6 +59,10 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        if (ExhibitionService.USER_ID.toString().equals(validation.user().id())) {
+            writeError(response, 403, "작성 기능은 개인 계정으로 로그인해 주세요.");
+            return;
+        }
         request.setAttribute(AUTHENTICATED_USER_ATTRIBUTE, validation.user());
         filterChain.doFilter(request, response);
     }
